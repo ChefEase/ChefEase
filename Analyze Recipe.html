@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Recipe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        .header {
+            background-color: black;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h2 {
+            color: black;
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: black;
+        }
+        .form-container input[type="text"], .form-container input[type="number"], .form-container textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-container button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .form-container button:hover {
+            background-color: #2980b9;
+        }
+        .results-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .results-container p {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+        }
+
+        /* Loading spinner */
+        .loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none; /* Initially hidden */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+  
+        .logo-mask {
+            position: absolute;
+            top: 40px; /* Adjust as needed */
+            left: 7%; /* Center horizontally */
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10; /* Ensure its above other content */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-mask">
+    <!-- Insert your logo image here -->
+          <img src="Logo.jpeg" alt="Logo" width="100">
+        </div>
+        <h1>ANALYZE RECIPE</h1>
+        <p>Want to find out if your homemade recipe is vegan, gluten-free or what class of cuisine it belongs to? Find out now with our Analyze Recipe Feature.</p>
+    </div>
+    <div class="form-container">
+        <h2>Recipe Details</h2>
+        <form id="recipe-form">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" placeholder="Input Title" required>
+            
+            <label for="servings">Servings:</label>
+            <input type="number" id="servings" name="servings" placeholder="Input Serving" required>
+            
+            <label for="ingredients">Ingredients:</label>
+            <textarea id="ingredients" name="ingredients" rows="8" placeholder="Input Ingredients" required></textarea>
+            
+            <label for="instructions">Instructions:</label>
+            <textarea id="instructions" name="instructions" rows="8" placeholder="Input Instructions" required></textarea>
+            
+            <button type="button" id="compute-button">Compute</button>
+        </form>
+    </div>
+
+    <div id="recipe-results" class="results-container">
+        <!-- Results will be displayed here -->
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loader" class="loader"></div>
+
+    <script>
+        const apiKey = '61a1501880de4d18b24da750446320c6';
+
+        document.getElementById('compute-button').addEventListener('click', () => {
+            computeRecipe();
+        });
+
+        async function computeRecipe() {
+            const title = document.getElementById('title').value.trim();
+            const servings = document.getElementById('servings').value.trim();
+            const ingredients = document.getElementById('ingredients').value.trim();
+            const instructions = document.getElementById('instructions').value.trim();
+
+            const url = `https://api.spoonacular.com/recipes/analyze?apiKey=${apiKey}`;
+
+            const data = {
+                title: title,
+                servings: servings,
+                ingredients: ingredients.split('\n'), // Split ingredients by new line
+                instructions: instructions
+            };
+
+            // Show loading spinner
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const responseData = await response.json();
+                displayRecipeDetails(responseData);
+            } catch (error) {
+                console.error('Error computing recipe:', error);
+                alert('An error occurred while computing the recipe. Please try again later.');
+            } finally {
+                // Hide loading spinner
+                loader.style.display = 'none';
+            }
+        }
+
+        function displayRecipeDetails(data) {
+            // Clear previous results
+            const resultsContainer = document.getElementById('recipe-results');
+            resultsContainer.innerHTML = '';
+
+            // Display badges, cuisines, diets, etc.
+            const { badges, cuisines, diets, veryHealthy, veryPopular } = data;
+
+            // Example: Display badges
+            if (badges && badges.length > 0) {
+                const badgesText = badges.map(badge => `<p>${badge}</p>`).join('');
+                resultsContainer.innerHTML += `<div><h3>Badges:</h3>${badgesText}</div>`;
+            }
+
+            // Example: Display cuisines
+            if (cuisines && cuisines.length > 0) {
+                const cuisinesText = cuisines.map(cuisine => `<p>${cuisine}</p>`).join('');
+                resultsContainer.innerHTML += `<div><h3>Cuisines:</h3>${cuisinesText}</div>`;
+            }
+
+            // Example: Display diets
+            if (diets && diets.length > 0) {
+                const dietsText = diets.map(diet => `<p>${diet}</p>`).join('');
+                resultsContainer.innerHTML += `<div><h3>Diets:</h3>${dietsText}</div>`;
+            }
+
+            // Example: Display veryHealthy
+            if (veryHealthy) {
+                resultsContainer.innerHTML += `<div><h3>Very Healthy:</h3><p>${veryHealthy}</p></div>`;
+            }
+
+            // Example: Display veryPopular
+            if (veryPopular) {
+                resultsContainer.innerHTML += `<div><h3>Very Popular:</h3><p>${veryPopular}</p></div>`;
+            }
+        }
+    </script>
+</body>
+</html>

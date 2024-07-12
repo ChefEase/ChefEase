@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Recipe</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: black;
+        }
+        #url-input {
+            padding: 10px;
+            width: 300px;
+            margin: 10px 0;
+        }
+        #search-button {
+            padding: 10px 20px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 30px;
+            color: black;
+            cursor: pointer;
+        }
+        .error-message {
+            color: red;
+        }
+        .recipe-container {
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+        }
+        .recipe-container img {
+            border-radius: 50%;
+            background: blue;
+            padding: 10px;
+        }
+        .recipe-container h3 {
+            margin-top: 10px;
+        }
+        .recipe-section {
+            margin-top: 20px;
+        }
+        #loading-indicator {
+            display: none;
+            margin-top: 20px;
+        }
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #download-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #download-button:disabled {
+            background-color: lightgray;
+            cursor: not-allowed;
+        }
+
+        .logo-mask {
+            position: absolute;
+            top: 20px; /* Adjust as needed */
+            left: 10%; /* Center horizontally */
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10; /* Ensure its above other content */
+    }
+    </style>
+</head>
+<body>
+    <div class="logo-mask">
+    <!-- Insert your logo image here -->
+        <img src="Logo.jpeg" alt="Logo" width="100">
+    </div>
+    <h1>EXTRACT RECIPE FROM WEBSITE</h1>
+    <h2>Extract recipes from your favourite website. Just Copy and Paste the Link</h2>
+    <p><strong>Disclaimer:</strong> By using this tool, you agree to review and comply with the Terms of Service of the website from which you are extracting recipes. The responsibility for ensuring compliance lies with the user.</p>
+    <label for="url-input">Website URL:</label>
+    <input type="text" id="url-input" placeholder="Enter URL here">
+    <button id="search-button">Search</button>
+    <p id="error-message" class="error-message"></p>
+    <button id="download-button" disabled>Download as PDF</button>
+    <div id="loading-indicator">
+        <div class="loader"></div>
+    </div>
+    <div id="recipe-container" class="recipe-container">
+        <img id="recipe-image" src="" alt="Recipe Image" width="200" height="200">
+        <h3 id="recipe-title"></h3>
+        <p id="recipe-summary"></p>
+        <div class="recipe-section">
+            <strong>Cooking Time:</strong> <span id="cooking-time"></span>
+        </div>
+        <div class="recipe-section">
+            <strong>Number of Servings:</strong> <span id="servings"></span>
+        </div>
+        <div class="recipe-section" id="ingredients-section">
+            <strong>Ingredients:</strong>
+            <ul id="ingredients-list"></ul>
+        </div>
+        <div class="recipe-section" id="instructions-section">
+            <strong>Instructions:</strong>
+            <p id="instructions"></p>
+        </div>
+        <div class="recipe-section" id="nutrition-section">
+            <strong>Nutritional Information:</strong>
+            <div id="nutrition-content"></div>
+        </div>
+        <div class="recipe-section" id="diets-section">
+            <strong>Diets:</strong>
+            <p id="diets"></p>
+        </div>
+        <div class="recipe-section" id="cuisines-section">
+            <strong>Cuisines:</strong>
+            <p id="cuisines"></p>
+        </div>
+        <div class="recipe-section" id="dish-types-section">
+            <strong>Dish Types:</strong>
+            <p id="dish-types"></p>
+        </div>
+        <div class="recipe-section" id="wine-pairing-section">
+            <strong>Wine Pairing:</strong>
+            <p id="wine-pairing"></p>
+        </div>
+    </div>
+    <script>
+        const searchButton = document.getElementById('search-button');
+        const urlInput = document.getElementById('url-input');
+        const errorMessage = document.getElementById('error-message');
+        const recipeContainer = document.getElementById('recipe-container');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const downloadButton = document.getElementById('download-button');
+        const apiKey = '61a1501880de4d18b24da750446320c6'; // Replace with your actual API key
+
+        searchButton.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (!isValidUrl(url)) {
+                displayError('URL format is invalid');
+                return;
+            }
+            fetchRecipe(url);
+        });
+
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function displayError(message) {
+            errorMessage.textContent = message;
+            recipeContainer.style.display = 'none';
+            downloadButton.disabled = true;
+        }
+
+        function fetchRecipe(url) {
+            loadingIndicator.style.display = 'block';
+            fetch(`https://api.spoonacular.com/recipes/extract?apiKey=${apiKey}&url=${encodeURIComponent(url)}&analyze=true`)
+                .then(response => {
+                    loadingIndicator.style.display = 'none';
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'failure') {
+                        displayError('Not a valid recipe URL');
+                    } else {
+                        displayRecipe(data);
+                    }
+                })
+                .catch(error => {
+                    loadingIndicator.style.display = 'none';
+                    console.error('Error fetching recipe:', error);
+                    displayError('An error occurred while fetching the recipe');
+                });
+        }
+
+        function displayRecipe(data) {
+            errorMessage.textContent = '';
+            recipeContainer.style.display = 'block';
+            downloadButton.disabled = false;
+
+            document.getElementById('recipe-image').src = data.image || 'default-image-url';
+            document.getElementById('recipe-title').textContent = data.title;
+            document.getElementById('recipe-summary').textContent = stripHtmlTags(data.summary);
+            document.getElementById('cooking-time').textContent = data.readyInMinutes ? `${data.readyInMinutes} minutes` : 'Not available';
+            document.getElementById('servings').textContent = data.servings;
+
+            const ingredientsList = document.getElementById('ingredients-list');
+            ingredientsList.innerHTML = '';
+            data.extendedIngredients.forEach(ingredient => {
+                const listItem = document.createElement('li');
+                listItem.textContent = ingredient.original;
+                if (ingredient.image) {
+                    const img = document.createElement('img');
+                    img.src = `https://spoonacular.com/cdn/ingredients_100x100/${ingredient.image}`;
+                    img.alt = ingredient.name;
+                    listItem.appendChild(img);
+                }
+                ingredientsList.appendChild(listItem);
+            });
+
+            document.getElementById('instructions').textContent = decodeHtmlEntities(data.instructions);
+          
+            document.getElementById('nutrition-content').textContent = data.nutrition;
+            document.getElementById('diets').textContent = data.diets.join(', ') || 'Unavailable';
+            document.getElementById('cuisines').textContent = data.cuisines.join(', ') || 'Unavailable';
+            document.getElementById('dish-types').textContent = data.dishTypes.join(', ') || 'Unavailable';
+            document.getElementById('wine-pairing').textContent = data.winePairing ? data.winePairing.pairingText : 'Unavailable';
+        }
+  
+        downloadButton.addEventListener('click', () => {
+            const doc = new jspdf.jsPDF();
+            doc.setFontSize(18);
+            doc.text(document.getElementById('recipe-title').textContent, 10, 10); 
+          
+            doc.setFontSize(12); 
+            doc.text(`Cooking Time: ${document.getElementById('cooking-time').textContent}`, 10, 20); 
+            doc.text(`Number of Servings: ${document.getElementById('servings').textContent}`, 10, 30); 
+          
+            let ingredients = ''; 
+            document.querySelectorAll('#ingredients-list li').forEach(li => { 
+                ingredients += `${li.textContent}\n`;
+            });
+            doc.text(`Ingredients:\n${ingredients}`, 10, 60);
+            const instructions = doc.splitTextToSize(document.getElementById('instructions').textContent, 180);
+            doc.text(instructions, 10, 140);
+  
+            doc.text(`Diets: \n${document.getElementById('diets').textContent}`, 10, 245); 
+            doc.text(`Cuisines: \n${document.getElementById('cuisines').textContent}`, 10, 255); 
+            doc.text(`Dish Types: \n${document.getElementById('dish-types').textContent}`, 10, 255); 
+            doc.text(`Wine Pairing: \n${document.getElementById('wine-pairing').textContent}`, 10, 265); 
+            doc.save('recipe.pdf'); 
+        });          
+
+        function stripHtmlTags(str) {
+            var doc = new DOMParser().parseFromString(str, 'text/html');
+            return doc.body.textContent || "";
+        }
+
+        function decodeHtmlEntities(str) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = str;
+            return txt.value;
+        }
+    </script>
+</body>
+</html>

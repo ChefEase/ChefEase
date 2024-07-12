@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrients Search</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #333;
+        }
+        .header {
+            background-image: url('Salad_Image.jpeg');
+            background-size: cover;
+            background-position: center;
+            width: 200%;
+            height: 30%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 10px solid #fff;
+            border-radius: 50px;
+            padding: 10px;
+        }
+        .header h1 {
+            color: white;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+  
+        .options-dropdown-menu {
+            padding: 50px 70px;
+            font-size: 70px;
+            cursor: pointer;
+            border-radius: 24px 0 0 24px;
+            border: 1px soid #ddd;
+        }
+  
+        .search-container {
+            margin-top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+  
+        #search-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-radius: 0 24px 24px 0;
+            background-color: #4285f4;
+            color: white;
+            cursor: pointer;
+            outline: none;
+        }
+        .search-button:hover {
+            background-color: #357ae8;
+        }
+  
+        #max-vitaminb5-container, #min-vitaminb5-container, #max-vitaminb2-container, #min-vitaminb2-container, #max-vitamina-container, #min-vitamina-container, #max-saturated-fat-container, #min-saturated-fat-container, #max-cholesterol-container, #min-cholesterol-container, #max-fat-container, #min-fat-container, #max-sodium-container, #min-sodium-container, #max-sugar-container, #min-sugar-container, #max-calcium-container, #min-calcium-container, #max-calories-container, #min-calories-container, #max-protein-container, #min-protein-container, #min-zinc-container, #max-zinc-container, #max-carbs-container, #min-carbs-container, #min-vitaminb1-container, #max-vitaminb1-container, #min-vitaminb3-container, #max-vitaminb3-container, #min-vitaminb6-container, #max-vitaminb6-container, #min-vitaminb12-container, #max-vitaminb12-container, #min-vitaminc-container, #max-vitaminc-container, #min-vitamind-container, #max-vitamind-container, #min-vitamine-container, #max-vitamine-container, #min-vitamink-container, #max-vitamink-container, #min-caffeine-container, #max-caffeine-container, #min-alcohol-container, #max-alcohol-container, #min-fiber-container, #max-fiber-container, #min-folate-container, #max-folate-container, #min-folicacid-container, #max-folicacid-container, #min-iodine-container, #max-iodine-container {
+            margin-top: 20px;
+            width: 100%;
+            display: none;
+            justify-content: center;
+        }   
+  
+        #min-carbs-input, #max-carbs-input, #max-zinc-input, #min-zinc-input, #min-protein-input, #max-protein-input, #min-calories-input, #max-calories-input, #min-calcium-input, #max-calcium-input, #min-sugar-input, #max-sugar-input, #min-sodium-input, #max-sodium-input, #min-fat-input, #max-fat-input, #min-cholesterol-input, #max-cholesterol-input, #min-saturated-fat-input, #max-saturated-fat-input, #min-vitamina-input, #max-vitamina-input, #min-vitaminb2-input, #max-vitaminb2-input, #min-vitaminb5-input, #max-vitaminb5-input, #min-vitaminb1-input, #max-vitaminb1-input, #min-vitaminb3-input, #max-vitaminb3-input, #min-vitaminb6-input, #max-vitaminb6-input, #min-vitaminb12-input, #max-vitaminb12-input, #min-vitaminc-input, #max-vitaminc-input, #min-vitamind-input, #max-vitamind-input, #min-vitamine-input, #max-vitamine-input, #min-vitamink-input, #max-vitamink-input, #min-caffeine-input, #max-caffeine-input, #min-alcohol-input, #max-alcohol-input, #min-fiber-input, #max-fiber-input, #min-folate-input, #max-folate-input, #min-folicacid-input, #max-folicacid-input, #min-iodine-input, #max-iodine-input {
+            width: 50%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 24px 0 0 24px;
+            outline: none;
+        }
+
+        .recipe-card {
+            background-color: #f9f9f9;
+            border: 50px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 600px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 10px;
+        }
+        .recipe-card h3 {
+            margin: 0;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #ff8c00;
+            color: white;
+        }
+        .recipe-card img {
+            width: 100%;
+            height: auto;
+        }
+        .recipe-card p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .recipe-card a {
+            display: block;
+            padding: 10px;
+            background-color: #ff8c00;
+            color: white;
+            text-decoration: none;
+        }
+        .recipe-card a:hover {
+            background-color: #ff7000;
+        }
+  
+        .results {
+            margin-top: 20px;
+            width: 80%;
+        }  
+  
+        .equipment-images img {
+          width: 50px;
+          margin-right: 10px;       
+        }
+      
+        .ingredients-images img {
+          width: 50px;
+          margin-right: 10px;       
+        }
+      
+      #loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0,0,0,0.5);
+          display: none;
+          justify-content: canter;
+          align-items: center;
+          z-index: 1000;
+      }
+  
+      #spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: #ffffff;
+          animation: spin 1s linear infinite;
+      }
+  
+      @keyframes spin {
+          to { transform: rotate(360deg); }        
+      }  
+  
+      .logo-mask {
+          position: absolute;
+          top: 300px; /* Adjust as needed */
+          left: 50%; /* Center horizontally */
+          transform: translateX(-50%);
+          background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 10; /* Ensure its above other content */
+      }
+    </style>
+</head>
+<body>
+    <div class="logo-mask">
+    <!-- Insert your logo image here -->
+        <img src="Logo.jpeg" alt="Logo" width="100">
+    </div>
+
+    <div class="header">
+        <h1>Nutrients</h1>
+    </div>
+    <div class="search-container">
+        <select id="options-dropdown-menu">
+            <option value="default">Add Option</option> 
+            <option value="minCarbs">Minimum Carbs</option>
+            <option value="maxCarbs">Maximum Carbs</option>
+            <option value="maxZinc">Maximum Zinc</option>
+            <option value="minZinc">Minimum Zinc</option>
+            <option value="minProtein">Minimum Protein</option>
+            <option value="maxProtein">Maximum Protein</option>
+            <option value="minCalories">Minimum Calories</option>
+            <option value="maxCalories">Maximum Calories</option>
+            <option value="minCalcium">Minimum Calcium</option>
+            <option value="maxCalcium">Maximum Calcium</option>
+            <option value="minSugar">Minimum Sugar</option>
+            <option value="maxSugar">Maximum Sugar</option>
+            <option value="minSodium">Minimum Sodium</option>
+            <option value="maxSodium">Maximum Sodium</option>
+            <option value="minFat">Minimum Fat</option>
+            <option value="maxFat">Maximum Fat</option>
+            <option value="minCholesterol">Minimum Cholesterol</option>
+            <option value="maxCholesterol">Maximum Cholesterol</option>
+            <option value="minSaturatedFat">Minimum Saturated Fat</option>
+            <option value="maxSaturatedFat">Maximum Saturated Fat</option>
+            <option value="minVitaminA">Minimum Vitamin A</option>
+            <option value="maxVitaminA">Maximum Vitamin A</option>
+            <option value="minVitaminB2">Minimum Vitamin B2</option>
+            <option value="maxVitaminB2">Maximum Vitamin B2</option>
+            <option value="minVitaminB5">Minimum Vitamin B5</option>
+            <option value="maxVitaminB5">Maximum Vitamin B5</option>
+            <option value="minVitaminB1">Minimum Vitamin B1</option>
+            <option value="maxVitaminB1">Maximum Vitamin B1</option>
+            <option value="minVitaminB3">Minimum Vitamin B3</option>
+            <option value="maxVitaminB3">Maximum Vitamin B3</option>
+            <option value="minVitaminB6">Minimum Vitamin B6</option>
+            <option value="maxVitaminB6">Maximum Vitamin B6</option>
+            <option value="minVitaminB12">Minimum Vitamin B12</option>
+            <option value="maxVitaminB12">Maximum Vitamin B12</option>
+            <option value="minVitaminC">Minimum Vitamin C</option>
+            <option value="maxVitaminC">Maximum Vitamin C</option>
+            <option value="minVitaminD">Minimum Vitamin D</option>
+            <option value="maxVitaminD">Maximum Vitamin D</option>          
+            <option value="minVitaminE">Minimum Vitamin E</option>
+            <option value="maxVitaminE">Maximum Vitamin E</option>          
+            <option value="minVitaminK">Minimum Vitamin K</option>
+            <option value="maxVitaminK">Maximum Vitamin K</option>          
+            <option value="minCaffeine">Minimum Caffeine</option>
+            <option value="maxCaffeine">Maximum Caffeine</option>          
+            <option value="minAlcohol">Minimum Alcohol</option>
+            <option value="maxAlcohol">Maximum Alcohol</option>          
+            <option value="minFiber">Minimum Fiber</option>
+            <option value="maxFiber">Maximum Fiber</option>          
+            <option value="minFolate">Minimum Folate</option>
+            <option value="maxFolate">Maximum Folate</option>          
+            <option value="minFolicAcid">Minimum Folic Acid</option>
+            <option value="maxFolicAcid">Maximum Folic Acid</option>          
+            <option value="minIodine">Minimum Iodine</option>
+            <option value="maxIodine">Maximum Iodine</option>          
+
+        </select>
+        <button id="search-button" onclick= searchRecipes()>Search Nutrients</button> 
+        <div id="min-carbs-container">
+            <input type="text" id="min-carbs-input" placeholder="Minimum Amount of Carbs is 10 grams">
+        </div>
+        <div id="max-carbs-container">
+            <input type="text" id="max-carbs-input" placeholder="Maximum Amount of Carbs is 100 grams">
+        </div>
+        <div id="max-zinc-container">
+            <input type="text" id="max-zinc-input" placeholder="Maximum Amount of Zinc is 100 Milligrams">
+        </div>
+        <div id="min-zinc-container">
+            <input type="text" id="min-zinc-input" placeholder="Minimum Amount of Zinc is 0 Milligrams">
+        </div>   
+        <div id="min-protein-container">
+            <input type="text" id="min-protein-input" placeholder="Minimum Amount of Protein is 10 grams">
+        </div>
+        <div id="max-protein-container">
+            <input type="text" id="max-protein-input" placeholder="Maximum Amount of Protein is 150 grams">
+        </div>
+        <div id="min-calories-container">
+            <input type="text" id="min-calories-input" placeholder="Minimum Amount of Calories is 50 per seving">
+        </div>
+        <div id="max-calories-container">
+          <input type="text" id="max-calories-input" placeholder="Maximum Amount of Calories is 3500 per serving ">
+        </div>
+        <div id="min-calcium-container">
+           <input type="text" id="min-calcium-input" placeholder="Minimum Amount of Calcium is 0 Milligrams"> 
+        </div>
+        <div id="max-calcium-container">
+           <input type="text" id="max-calcium-input" placeholder="Maximum Amount of Calcium is 100 Milligrams">
+        </div> 
+        <div id="min-sugar-container">
+           <input type="text" id="min-sugar-input" placeholder="Minimum Amount of Sugar is 0 grams">
+        </div> 
+        <div id="max-sugar-container">
+           <input type="text" id="max-sugar-input" placeholder="Maximum Amount of Sugar is 500 grams">
+        </div> 
+        <div id="min-sodium-container">
+           <input type="text" id="min-sodium-input" placeholder="Minimum Amount of Sodium is 0 Milligrams">
+        </div> 
+        <div id="max-sodium-container">
+           <input type="text" id="max-sodium-input" placeholder="Maximum Amount of Sodium is 100 Milligrams">
+        </div>
+        <div id="min-fat-container">
+          <input type="text" id="min-fat-input" placeholder="Minimum Amount of Fat is 1 gram">  
+        </div>
+        <div id="max-fat-container">
+          <input type="text" id="max-fat-input" placeholder="Maximum Amount of Fat is 100 grams">  
+        </div>
+        <div id="min-cholesterol-container">
+          <input type="text" id="min-cholesterol-input" placeholder="Minimum Amount of Cholesterol is 0 Milligrams">  
+        </div>
+        <div id="max-cholesterol-container">
+          <input type="text" id="max-cholesterol-input" placeholder="Maximum Amount of Cholesterol is 100 Milligrams">  
+        </div>
+        <div id="min-saturated-fat-container">
+          <input type="text" id="min-saturated-fat-input" placeholder="Minimum Amount of Saturated Fat is 0 grams">  
+        </div>
+        <div id="max-saturated-fat-container">
+          <input type="text" id="max-saturated-fat-input" placeholder="Maximum Amount of Saturated Fat is 100 grams">  
+        </div>
+        <div id="min-vitamina-container">
+          <input type="text" id="min-vitamina-input" placeholder="Minimum Amount of Vitamin A is 0 UI">  
+        </div>
+        <div id="max-vitamina-container">
+          <input type="text" id="max-vitamina-input" placeholder="Maximum Amount of Vitamin A is 100 UI">  
+        </div>   
+        <div id="min-vitaminb2-container">
+          <input type="text" id="min-vitaminb2-input" placeholder="Minimum Amount of Vitamin B2 is 0 UI">  
+        </div>
+        <div id="max-vitaminb2-container">
+          <input type="text" id="max-vitaminb2-input" placeholder="Maximum Amount of Vitamin B2 is 100 UI">  
+        </div>      
+        <div id="min-vitaminb5-container">
+          <input type="text" id="min-vitaminb5-input" placeholder="Minimum Amount of Vitamin B5 is 0 UI">  
+        </div>
+        <div id="max-vitaminb5-container">
+          <input type="text" id="max-vitaminb5-input" placeholder="Maximum Amount of Vitamin B5 is 100 UI">  
+        </div>
+        <div id="min-vitaminb1-container">
+          <input type="text" id="min-vitaminb1-input" placeholder="Minimum Amount of Vitamin B1 is 0 UI">  
+        </div>
+        <div id="max-vitaminb1-container">
+          <input type="text" id="max-vitaminb1-input" placeholder="Maximum Amount of Vitamin B1 is 100 UI">  
+        </div>
+        <div id="min-vitaminb3-container">
+          <input type="text" id="min-vitaminb3-input" placeholder="Minimum Amount of Vitamin B3 is 0 UI">  
+        </div>
+        <div id="max-vitaminb3-container">
+          <input type="text" id="max-vitaminb3-input" placeholder="Maximum Amount of Vitamin B3 is 100 UI">  
+        </div>      
+              <div id="min-vitaminb6-container">
+          <input type="text" id="min-vitaminb6-input" placeholder="Minimum Amount of Vitamin B6 is 0 UI">  
+        </div>
+        <div id="max-vitaminb6-container">
+          <input type="text" id="max-vitaminb6-input" placeholder="Maximum Amount of Vitamin B6 is 100 UI">  
+        </div>      
+        <div id="min-vitaminb12-container">
+          <input type="text" id="min-vitaminb12-input" placeholder="Minimum Amount of Vitamin B12 is 0 UI">  
+        </div>
+        <div id="max-vitaminb12-container">
+          <input type="text" id="max-vitaminb12-input" placeholder="Maximum Amount of Vitamin B12 is 100 UI">  
+        </div>      
+        <div id="min-vitaminc-container">
+          <input type="text" id="min-vitaminc-input" placeholder="Minimum Amount of Vitamin C is 0 UI">  
+        </div>
+        <div id="max-vitaminc-container">
+          <input type="text" id="max-vitaminc-input" placeholder="Maximum Amount of Vitamin C is 100 UI">  
+        </div>      
+        <div id="min-vitamind-container">
+          <input type="text" id="min-vitamind-input" placeholder="Minimum Amount of Vitamin D is 0 UI">  
+        </div>
+        <div id="max-vitamind-container">
+          <input type="text" id="max-vitamind-input" placeholder="Maximum Amount of Vitamin D is 100 UI">  
+        </div>      
+          <div id="min-vitamine-container">
+          <input type="text" id="min-vitamine-input" placeholder="Minimum Amount of Vitamin E is 0 UI">  
+        </div>
+        <div id="max-vitamine-container">
+          <input type="text" id="max-vitamine-input" placeholder="Maximum Amount of Vitamin E is 100 UI">  
+        </div>      
+        <div id="min-vitamink-container">
+          <input type="text" id="min-vitamink-input" placeholder="Minimum Amount of Vitamin K is 0 UI">  
+        </div>
+        <div id="max-vitamink-container">
+          <input type="text" id="max-vitamink-input" placeholder="Maximum Amount of Vitamin K is 100 UI">  
+        </div>      
+        <div id="min-caffeine-container">
+          <input type="text" id="min-caffeine-input" placeholder="Minimum Amount of Caffeine is 0 Milligrams">  
+        </div>
+        <div id="max-caffeine-container">
+          <input type="text" id="max-caffeine-input" placeholder="Maximum Amount of Caffeine is 100 Milligrams">  
+        </div>      
+        <div id="min-alcohol-container">
+          <input type="text" id="min-alcohol-input" placeholder="Minimum Amount of Alcohol is 0 grams">  
+        </div>
+        <div id="max-alcohol-container">
+          <input type="text" id="max-alcohol-input" placeholder="Maximum Amount of Alcohol is 100 grams">  
+        </div>      
+        <div id="min-fiber-container">
+          <input type="text" id="min-fiber-input" placeholder="Minimum Amount of Fiber is 0 grams">  
+        </div>
+        <div id="max-fiber-container">
+          <input type="text" id="max-fiber-input" placeholder="Maximum Amount of Fiber is 100 grams">  
+        </div>      
+        <div id="min-folate-container">
+          <input type="text" id="min-folate-input" placeholder="Minimum Amount of Folate is 0 Micrograms">  
+        </div>
+        <div id="max-folate-container">
+          <input type="text" id="max-folate-input" placeholder="Maximum Amount of Folate is 100 Micrograms">  
+        </div>      
+        <div id="min-folicacid-container">
+          <input type="text" id="min-folicacid-input" placeholder="Minimum Amount of Folic Acid is 0 Micrograms">  
+        </div>
+        <div id="max-folicacid-container">
+          <input type="text" id="max-folicacid-input" placeholder="Maximum Amount of Folic Acid is 100 Micrograms">  
+        </div>      
+        <div id="min-iodine-container">
+          <input type="text" id="min-iodine-input" placeholder="Minimum Amount of Iodine is 0 Micrograms">  
+        </div>
+        <div id="max-iodine-container">
+          <input type="text" id="max-iodine-input" placeholder="Maximum Amount of Iodine is 100 Micrograms">  
+        </div>      
+
+    </div>
+    <div class="results" id="results"></div>
+  <div id="loading-overlay">
+      <div class="spinner"></div>
+  </div>
+    <script>
+        const apiKey = ('61a1501880de4d18b24da750446320c6')
+
+        document.getElementById('options-dropdown-menu').addEventListener('change', (event) => {
+            const selectedOption = event.target.value;
+            const minCarbsContainer = document.getElementById('min-carbs-container');
+            const maxCarbsContainer = document.getElementById('max-carbs-container');
+            const maxZincContainer = document.getElementById('max-zinc-container');
+            const minZincContainer = document.getElementById('min-zinc-container');
+            const minProteinContainer = document.getElementById('min-protein-container');
+            const maxProteinContainer = document.getElementById('max-protein-container');
+            const minCaloriesContainer = document.getElementById('min-calories-container');
+            const maxCaloriesContainer = document.getElementById('max-calories-container');
+            const minCalciumContainer = document.getElementById('min-calcium-container');
+            const maxCalciumContainer = document.getElementById('max-calcium-container');
+            const minSugarContainer = document.getElementById('min-sugar-container');
+            const maxSugarContainer = document.getElementById('max-sugar-container');
+            const minSodiumContainer = document.getElementById('min-sodium-container');
+            const maxSodiumContainer = document.getElementById('max-sodium-container');
+            const minFatContainer = document.getElementById('min-fat-container');
+            const maxFatContainer = document.getElementById('max-fat-container');
+            const minCholesterolContainer = document.getElementById('min-cholesterol-container');
+            const maxCholesterolContainer = document.getElementById('max-cholesterol-container');
+            const minSaturatedFatContainer = document.getElementById('min-saturated-fat-container');
+            const maxSaturatedFatContainer = document.getElementById('max-saturated-fat-container');
+            const minVitaminAContainer = document.getElementById('min-vitamina-container');
+            const maxVitaminAContainer = document.getElementById('max-vitamina-container');
+            const minVitaminB2Container = document.getElementById('min-vitaminb2-container');
+            const maxVitaminB2Container = document.getElementById('max-vitaminb2-container');
+            const minVitaminB5Container = document.getElementById('min-vitaminb5-container');
+            const maxVitaminB5Container = document.getElementById('max-vitaminb5-container');
+            const minVitaminB1Container = document.getElementById('min-vitaminb1-container');
+            const maxVitaminB1Container = document.getElementById('max-vitaminb1-container');
+            const minVitaminB3Container = document.getElementById('min-vitaminb3-container');
+            const maxVitaminB3Container = document.getElementById('max-vitaminb3-container');
+            const minVitaminB6Container = document.getElementById('min-vitaminb6-container');
+            const maxVitaminB6Container = document.getElementById('max-vitaminb6-container');
+            const minVitaminB12Container = document.getElementById('min-vitaminb12-container');
+            const maxVitaminB12Container = document.getElementById('max-vitaminb12-container');
+            const minVitaminCContainer = document.getElementById('min-vitaminc-container');
+            const maxVitaminCContainer = document.getElementById('max-vitaminc-container');
+            const minVitaminDContainer = document.getElementById('min-vitamind-container');
+            const maxVitaminDContainer = document.getElementById('max-vitamind-container');
+            const minVitaminEContainer = document.getElementById('min-vitamine-container');
+            const maxVitaminEContainer = document.getElementById('max-vitamine-container');
+            const minVitaminKContainer = document.getElementById('min-vitamink-container');
+            const maxVitaminKContainer = document.getElementById('max-vitamink-container');
+            const minCaffeineContainer = document.getElementById('min-caffeine-container');
+            const maxCaffeineContainer = document.getElementById('max-caffeine-container');
+            const minAlcoholContainer = document.getElementById('min-alcohol-container');
+            const maxAlcoholContainer = document.getElementById('max-alcohol-container');
+            const minFiberContainer = document.getElementById('min-fiber-container');
+            const maxFiberContainer = document.getElementById('max-fiber-container');
+            const minFolateContainer = document.getElementById('min-folate-container');
+            const maxFolateContainer = document.getElementById('max-folate-container');
+            const minFolicAcidContainer = document.getElementById('min-folicacid-container');
+            const maxFolicAcidContainer = document.getElementById('max-folicacid-container');
+            const minIodineContainer = document.getElementById('min-iodine-container');
+            const maxIodineContainer = document.getElementById('max-iodine-container');
+                    
+
+            minCarbsContainer.style.display = 'none';
+            maxCarbsContainer.style.display = 'none';
+            maxZincContainer.style.display = 'none';
+            minZincContainer.style.display = 'none';
+            minProteinContainer.style.display = 'none';
+            maxProteinContainer.style.display = 'none';
+            minCaloriesContainer.style.display = 'none';
+            maxCaloriesContainer.style.display = 'none';
+            minCalciumContainer.style.display = 'none';
+            maxCalciumContainer.style.display = 'none';
+            minSugarContainer.style.display = 'none'
+            maxSugarContainer.style.display = 'none'
+            minSodiumContainer.style.display = 'none'
+            maxSodiumContainer.style.display = 'none'
+            minFatContainer.style.display = 'none'
+            maxFatContainer.style.display = 'none'
+            minCholesterolContainer.style.display = 'none'
+            maxCholesterolContainer.style.display = 'none'
+            minSaturatedFatContainer.style.display = 'none'
+            maxSaturatedFatContainer.style.display = 'none'
+            minVitaminAContainer.style.display = 'none'
+            maxVitaminAContainer.style.display = 'none'
+            minVitaminB2Container.style.display = 'none'
+            maxVitaminB2Container.style.display = 'none'
+            minVitaminB5Container.style.display = 'none'
+            maxVitaminB5Container.style.display = 'none'
+            minVitaminB1Container.style.display = 'none'
+            maxVitaminB1Container.style.display = 'none'
+            minVitaminB3Container.style.display = 'none'
+            maxVitaminB3Container.style.display = 'none'
+            minVitaminB6Container.style.display = 'none'
+            maxVitaminB6Container.style.display = 'none'
+            minVitaminB12Container.style.display = 'none'
+            maxVitaminB12Container.style.display = 'none'
+            minVitaminCContainer.style.display = 'none'
+            maxVitaminCContainer.style.display = 'none'
+            minVitaminDContainer.style.display = 'none'
+            maxVitaminDContainer.style.display = 'none'
+            minVitaminEContainer.style.display = 'none'
+            maxVitaminEContainer.style.display = 'none'
+            minVitaminKContainer.style.display = 'none'
+            maxVitaminKContainer.style.display = 'none'
+            minCaffeineContainer.style.display = 'none'
+            maxCaffeineContainer.style.display = 'none'
+            minAlcoholContainer.style.display = 'none'
+            maxAlcoholContainer.style.display = 'none'
+            minFiberContainer.style.display = 'none'
+            maxFiberContainer.style.display = 'none'
+            minFolateContainer.style.display = 'none'
+            maxFolateContainer.style.display = 'none'
+            minFolicAcidContainer.style.display = 'none'
+            maxFolicAcidContainer.style.display = 'none'
+            minIodineContainer.style.display = 'none'
+            maxIodineContainer.style.display = 'none'
+      
+
+            if (selectedOption === 'minCarbs') {
+                minCarbsContainer.style.display = 'block';
+            }
+          
+            if (selectedOption === 'maxCarbs') {
+                maxCarbsContainer.style.display = 'block';
+            }
+                    
+            if (selectedOption === 'maxZinc') {
+                maxZincContainer.style.display = 'block';
+            }
+          
+            if (selectedOption === 'minZinc') {
+                minZincContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minProtein') {
+                minProteinContainer.style.display = 'block';
+            }
+            if (selectedOption === 'maxProtein') {
+                maxProteinContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minCalories') {
+                minCaloriesContainer.style.display = 'block';
+            }          
+            if (selectedOption === 'maxCalories') {
+                maxCaloriesContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minCalcium') {
+                minCalciumContainer.style.display = 'block';
+            }
+            if (selectedOption === 'maxCalcium') {
+                maxCalciumContainer.style.display = 'block';
+            }  
+            if (selectedOption === 'minSugar') {
+                minSugarContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxSugar') {
+                maxSugarContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'minSodium') {
+                minSodiumContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxSodium') {
+                maxSodiumContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'minFat') {
+                minFatContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxFat') {
+                maxFatContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'minCholesterol') {
+                minCholesterolContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxCholesterol') {
+                maxCholesterolContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'minSaturatedFat') {
+                minSaturatedFatContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxSaturatedFat') {
+                maxSaturatedFatContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'minVitaminA') {
+                minVitaminAContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminA') {
+                maxVitaminAContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'minVitaminB2') {
+                minVitaminB2Container.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminB2') {
+                maxVitaminB2Container.style.display = 'block';
+            }              
+            if (selectedOption === 'minVitaminB5') {
+                minVitaminB5Container.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminB5') {
+                maxVitaminB5Container.style.display = 'block';
+            }              
+            if (selectedOption === 'minVitaminB1') {
+                minVitaminB1Container.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminB1') {
+                maxVitaminB1Container.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminB3') {
+                minVitaminB3Container.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminB3') {
+                maxVitaminB3Container.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminB6') {
+                minVitaminB6Container.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminB6') {
+                maxVitaminB6Container.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminB12') {
+                minVitaminB12Container.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminB12') {
+                maxVitaminB12Container.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminC') {
+                minVitaminCContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminC') {
+                maxVitaminCContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminD') {
+                minVitaminDContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminD') {
+                maxVitaminDContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminE') {
+                minVitaminEContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminE') {
+                maxVitaminEContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minVitaminK') {
+                minVitaminKContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxVitaminK') {
+                maxVitaminKContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minAlcohol') {
+                minAlcoholContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxAlcohol') {
+                maxAlcoholContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minCaffeine') {
+                minCaffeineContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxCaffeine') {
+                maxCaffeineContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minFiber') {
+                minFiberContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxFiber') {
+                maxFiberContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minFolate') {
+                minFolateContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxFolate') {
+                maxFolateContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minFolicAcid)') {
+                minFolicAcidContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxFolicAcid') {
+                maxFolicAciContainer.style.display = 'block';
+            }
+            if (selectedOption === 'minIodine') {
+                minIodineContainer.style.display = 'block';
+            }              
+            if (selectedOption === 'maxIodine') {
+                maxIodineContainer.style.display = 'block';
+            }
+    
+        });  
+ 
+        function displayError(message) { 
+            const resultsContainer = document.getElementById('results'); 
+            resultsContainer.innerHTML = `<p style="color: red;">${message}</p>`; 
+        }
+  
+        async function fetchRecipeInfo(recipeId, apiKey) {
+            try {
+            // Fetch basic recipe information including wine pairing
+            const infoUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${apiKey}&addWinePairing=true`;
+            const infoResponse = await fetch(infoUrl);
+        
+           if (!infoResponse.ok) {
+                throw new Error(`Failed to fetch recipe info. Status: ${infoResponse.status}`);
+            }
+
+            const infoData = await infoResponse.json();
+            console.log('Full recipe data:', infoData);
+
+            // Fetch complex search data to get summary, nutrition info, and max ready time
+            const complexSearchUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${infoData.title}&number=1&apiKey=${apiKey}&addRecipeInformation=true&addRecipeNutrition=true&maxReadyTime=600`;
+            const complexSearchResponse = await fetch(complexSearchUrl);
+
+            if (!complexSearchResponse.ok) {
+                throw new Error(`Failed to fetch complex search data. Status: ${complexSearchResponse.status}`);
+            }
+
+            const complexSearchData = await complexSearchResponse.json();
+            console.log('Complex search data:', complexSearchData);
+
+            // Extract summary and nutrition info
+            const summary = complexSearchData.results[0].summary || 'Summary not available';
+            const nutritionInfo = {
+                sourceName: complexSearchData.results[0].sourceName || 'N/A'
+            };
+            console.log('Extracted nutrition info:', nutritionInfo);
+            console.log('Extracted summary:', summary);
+            const nutrientsUrl = `https://api.spoonacular.com/recipes/${recipeId}/nutritionWidget.json?apiKey=${apiKey}`; 
+            const nutrientsResponse = await fetch(nutrientsUrl); 
+            if (!nutrientsResponse.ok) { 
+                throw new Error(`Failed to fetch nutrients widget data. Status: ${nutrientsResponse.status}`); 
+            } 
+            const nutrientsData = await nutrientsResponse.json();             
+            console.log('Nutrients Data:', nutrientsData);
+            const tasteUrl = `https://api.spoonacular.com/recipes/${recipeId}/tasteWidget.json?apiKey=${apiKey}`
+            const tasteResponse = await fetch(tasteUrl);
+            if (!tasteResponse.ok) {
+                throw new Error(`Failed to fetch taste widget data. Status: ${tasteResponse.status}`); 
+            }
+            const tasteData = await tasteResponse.json();
+            console.log('Taste Data:', tasteData);               
+            const ingredientsUrl = `https://api.spoonacular.com/recipes/${recipeId}/ingredientWidget.json?apiKey=${apiKey}`;
+            const ingredientsResponse = await fetch(ingredientsUrl);
+            if (!ingredientsResponse.ok) {
+                throw new Error(`Failed to fetch ingredients widget data. Status: ${ingredientsResponse.status}`);
+            }
+            const ingredientsData = await ingredientsResponse.json();
+            console.log('Ingredients Data:', ingredientsData);              
+                      
+            // Fetch equipment widget data
+            const equipmentUrl = `https://api.spoonacular.com/recipes/${recipeId}/equipmentWidget.json?apiKey=${apiKey}`;
+            const equipmentResponse = await fetch(equipmentUrl);
+
+            if (!equipmentResponse.ok) {
+               throw new Error(`Failed to fetch equipment widget data. Status: ${equipmentResponse.status}`);
+            }
+
+            const equipmentData = await equipmentResponse.json();
+            console.log('Equipment Data:', equipmentData);
+
+            // Construct and return the recipe info object
+            return {
+                title: infoData.title || 'Unknown',
+                image: infoData.image || '',
+                equipment: equipmentData.equipment || [],
+                summary: summary,
+                nutrition: nutritionInfo,
+                nutrients: nutrientsData,
+                taste: tasteData,
+                ingredients: ingredientsData.ingredients || []
+            };
+
+        } catch (error) {
+            console.error('Error fetching recipe info:', error);
+            return {
+                title: 'Unknown',
+                image: '',
+                equipment: [],
+                summary: 'Summary not available',
+                nutrition: {
+                    sourceName: 'N/A'
+                },
+                nutrients: {},
+                taste:'Taste Information Not Availabe' ,
+                ingredients: []
+            };
+        }
+    }
+ 
+        async function searchRecipes() {
+            let url = `https://api.spoonacular.com/recipes/findByNutrients?apiKey=${apiKey}&number=100`
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
+            
+            const minCarbs = document.getElementById('min-carbs-input').value;
+            const maxCarbs = document.getElementById('max-carbs-input').value;
+            const maxZinc = document.getElementById('max-zinc-input').value;
+            const minZinc = document.getElementById('min-zinc-input').value;
+            const minProtein = document.getElementById('min-protein-input').value;
+            const maxProtein = document.getElementById('max-protein-input').value;
+            const minCalories = document.getElementById('min-calories-input').value;
+            const maxCalories = document.getElementById('max-calories-input').value;
+            const minCalcium = document.getElementById('min-calcium-input').value;
+            const maxCalcium = document.getElementById('max-calcium-input').value;
+            const minSugar = document.getElementById('min-sugar-input').value;
+            const maxSugar = document.getElementById('max-sugar-input').value;
+            const minSodium = document.getElementById('min-sodium-input').value;
+            const maxSodium = document.getElementById('max-sodium-input').value;
+            const minFat = document.getElementById('min-fat-input').value;
+            const maxFat = document.getElementById('max-fat-input').value;
+            const minCholesterol = document.getElementById('min-cholesterol-input').value;
+            const maxCholesterol = document.getElementById('max-cholesterol-input').value;
+            const minSaturatedFat = document.getElementById('min-saturated-fat-input').value;
+            const maxSaturatedFat = document.getElementById('max-saturated-fat-input').value;
+            const minVitaminA = document.getElementById('min-vitamina-input').value;
+            const maxVitaminA = document.getElementById('max-vitamina-input').value;
+            const minVitaminB2 = document.getElementById('min-vitaminb2-input').value;
+            const maxVitaminB2 = document.getElementById('max-vitaminb2-input').value;
+            const minVitaminB5 = document.getElementById('min-vitaminb5-input').value;
+            const maxVitaminB5 = document.getElementById('max-vitaminb5-input').value;
+            const minVitaminB1 = document.getElementById('min-vitaminb1-input').value;
+            const maxVitaminB1 = document.getElementById('max-vitaminb1-input').value;
+            const minVitaminB3 = document.getElementById('min-vitaminb3-input').value;
+            const maxVitaminB3 = document.getElementById('max-vitaminb3-input').value;
+            const minVitaminB6 = document.getElementById('min-vitaminb6-input').value;
+            const maxVitaminB6 = document.getElementById('max-vitaminb6-input').value;
+            const minVitaminB12 = document.getElementById('min-vitaminb12-input').value;
+            const maxVitaminB12 = document.getElementById('max-vitaminb12-input').value;
+            const minVitaminC = document.getElementById('min-vitaminc-input').value;
+            const maxVitaminC = document.getElementById('max-vitaminc-input').value;
+            const minVitaminD = document.getElementById('min-vitamind-input').value;
+            const maxVitaminD = document.getElementById('max-vitamind-input').value;
+            const minVitaminE = document.getElementById('min-vitamine-input').value;
+            const maxVitaminE = document.getElementById('max-vitamine-input').value;
+            const minVitaminK = document.getElementById('min-vitamink-input').value;
+            const maxVitaminK = document.getElementById('max-vitamink-input').value;
+            const minAlcohol = document.getElementById('min-alcohol-input').value;
+            const maxAlcohol = document.getElementById('max-alcohol-input').value;
+            const minCaffeine = document.getElementById('min-caffeine-input').value;
+            const maxCaffeine = document.getElementById('max-caffeine-input').value;
+            const minFiber = document.getElementById('min-fiber-input').value;
+            const maxFiber = document.getElementById('max-fiber-input').value;
+            const minFolate = document.getElementById('min-folate-input').value;
+            const maxFolate = document.getElementById('max-folate-input').value;
+            const minFolicAcid = document.getElementById('min-folicacid-input').value;
+            const maxFolicAcid = document.getElementById('max-folicacid-input').value;
+            const minIodine = document.getElementById('min-iodine-input').value;
+            const maxIodine = document.getElementById('max-iodine-input').value;
+                   
+            if (minCarbs && !isNaN(minCarbs)) { 
+                url += `&minCarbs=${minCarbs}`; 
+            } else if (minCarbs) {
+                displayError('Invalid Input. Must be an Integer');
+                return;
+            }              
+              
+            if (maxCarbs && !isNaN(maxCarbs)) { 
+                url += `&maxCarbs=${maxCarbs}`;
+            } else if (maxCarbs) {
+                displayError('Invalid Input. Must be an Integer'); 
+                return;
+            }              
+              
+            if (maxZinc && !isNaN(maxZinc)) { 
+                url += `&maxZinc=${maxZinc}`;
+            } else if (maxZinc) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (minZinc && !isNaN(minZinc)) { 
+                url += `&minZinc=${minZinc}`;
+            } else if (minZinc) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (minProtein && !isNaN(minProtein)) { 
+                url += `&minProtein=${minProtein}`;
+            } else if (minProtein) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxProtein && !isNaN(maxProtein)) { 
+                url += `&maxProtein=${maxProtein}`;
+            } else if (maxProtein) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+
+            if (minCalories && !isNaN(minCalories)) { 
+                url += `&minCalories=${minCalories}`;
+            } else if (minCalories) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxCalories && !isNaN(maxCalories)) { 
+                url += `&maxCalories=${maxCalories}`;
+            } else if (maxCalories) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (minCalcium && !isNaN(minCalcium)) { 
+                url += `&minCalcium=${minCalcium}`;
+            } else if (minCalcium) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxCalcium && !isNaN(maxCalcium)) { 
+                url += `&maxCalcium=${maxCalcium}`;
+            } else if (maxCalcium) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (minSugar && !isNaN(minSugar)) { 
+                url += `&minSugar=${minSugar}`;
+            } else if (minSugar) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxSugar && !isNaN(maxSugar)) { 
+                url += `&maxSugar=${maxSugar}`;
+            } else if (maxSugar) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (minSodium && !isNaN(minSodium)) { 
+                url += `&minSodium=${minSodium}`;
+            } else if (minSodium) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxSodium && !isNaN(maxSodium)) { 
+                url += `&maxSodium=${maxSodium}`;
+            } else if (maxSodium) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+            if (minFat && !isNaN(minFat)) { 
+                url += `&minFat=${minFat}`;
+            } else if (minFat) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxFat && !isNaN(maxFat)) { 
+                url += `&maxFat=${maxFat}`;
+            } else if (maxFat) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+            if (minCholesterol && !isNaN(minCholesterol)) { 
+                url += `&minCholesterol=${minCholesterol}`;
+            } else if (minCholesterol) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxCholesterol && !isNaN(maxCholesterol)) { 
+                url += `&maxCholesterol=${maxCholesterol}`;
+            } else if (maxCholesterol) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+            if (minSaturatedFat && !isNaN(minSaturatedFat)) { 
+                url += `&minSaturatedFat=${minSaturatedFat}`;
+            } else if (minSaturatedFat) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxSaturatedFat && !isNaN(maxSaturatedFat)) { 
+                url += `&maxSaturatedFat=${maxSaturatedFat}`;
+            } else if (maxSaturatedFat) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+            if (minVitaminA && !isNaN(minVitaminA)) { 
+                url += `&minVitaminA=${minVitaminA}`;
+            } else if (minVitaminA) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminA && !isNaN(maxVitaminA)) { 
+                url += `&maxVitaminA=${maxVitaminA}`;
+            } else if (maxVitaminA) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+            if (minVitaminB2 && !isNaN(minVitaminB2)) { 
+                url += `&minVitaminB2=${minVitaminB2}`;
+            } else if (minVitaminB2) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminB2 && !isNaN(maxVitaminB2)) { 
+                url += `&maxVitaminB2=${maxVitaminB2}`;
+            } else if (maxVitaminB2) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+            if (minVitaminB5 && !isNaN(minVitaminB5)) { 
+                url += `&minVitaminB5=${minVitaminB5}`;
+            } else if (minVitaminB5) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminB5 && !isNaN(maxVitaminB5)) { 
+                url += `&maxVitaminB5=${maxVitaminB5}`;
+            } else if (maxVitaminB5) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minVitaminB1 && !isNaN(minVitaminB1)) { 
+                url += `&minVitaminB1=${minVitaminB1}`;
+            } else if (minVitaminB1) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminB1 && !isNaN(maxVitaminB1)) { 
+                url += `&maxVitaminB1=${maxVitaminB1}`;
+            } else if (maxVitaminB1) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minVitaminB3 && !isNaN(minVitaminB3)) { 
+                url += `&minVitaminB3=${minVitaminB3}`;
+            } else if (minVitaminB3) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminB3 && !isNaN(maxVitaminB3)) { 
+                url += `&maxVitaminB3=${maxVitaminB3}`;
+            } else if (maxVitaminB3) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minVitaminB6 && !isNaN(minVitaminB6)) { 
+                url += `&minVitaminB6=${minVitaminB6}`;
+            } else if (minVitaminB6) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminB6 && !isNaN(maxVitaminB6)) { 
+                url += `&maxVitaminB6=${maxVitaminB6}`;
+            } else if (maxVitaminB6) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minVitaminB12 && !isNaN(minVitaminB12)) { 
+                url += `&minVitaminB12=${minVitaminB12}`;
+            } else if (minVitaminB12) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminB12 && !isNaN(maxVitaminB12)) { 
+                url += `&maxVitaminB12=${maxVitaminB12}`;
+            } else if (maxVitaminB12) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minVitaminD && !isNaN(minVitaminD)) { 
+                url += `&minVitaminD=${minVitaminD}`;
+            } else if (minVitaminD) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminD && !isNaN(maxVitaminD)) { 
+                url += `&maxVitaminD=${maxVitaminD}`;
+            } else if (maxVitaminD) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minVitaminC && !isNaN(minVitaminC)) { 
+                url += `&minVitaminC=${minVitaminC}`;
+            } else if (minVitaminC) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminC && !isNaN(maxVitaminC)) { 
+                url += `&maxVitaminC=${maxVitaminC}`;
+            } else if (maxVitaminC) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+             if (minVitaminE && !isNaN(minVitaminE)) { 
+                url += `&minVitaminE=${minVitaminE}`;
+            } else if (minVitaminE) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminE && !isNaN(maxVitaminE)) { 
+                url += `&maxVitaminE=${maxVitaminE}`;
+            } else if (maxVitaminE) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+             if (minVitaminK && !isNaN(minVitaminK)) { 
+                url += `&minVitaminK=${minVitaminK}`;
+            } else if (minVitaminK) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxVitaminK && !isNaN(maxVitaminK)) { 
+                url += `&maxVitaminK=${maxVitaminK}`;
+            } else if (maxVitaminK) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minAlcohol && !isNaN(minAlcohol)) { 
+                url += `&minAlcohol=${minAlcohol}`;
+            } else if (minAlcohol) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxAlcohol && !isNaN(maxAlcohol)) { 
+                url += `&maxAlcohol=${maxAlcohol}`;
+            } else if (maxAlcohol) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minCaffeine && !isNaN(minCaffeine)) { 
+                url += `&minCaffeine=${minCaffeine}`;
+            } else if (minCaffeine) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxCaffeine && !isNaN(maxCaffeine)) { 
+                url += `&maxCaffeine=${maxCaffeine}`;
+            } else if (maxCaffeine) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minFiber && !isNaN(minFiber)) { 
+                url += `&minFiber=${minFiber}`;
+            } else if (minFiber) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxFiber && !isNaN(maxFiber)) { 
+                url += `&maxFiber=${maxFiber}`;
+            } else if (maxFiber) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minFolate && !isNaN(minFolate)) { 
+                url += `&minFolate=${minFolate}`;
+            } else if (minFolate) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxFolate && !isNaN(maxFolate)) { 
+                url += `&maxFolate=${maxFolate}`;
+            } else if (maxFolate) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minFolicAcid && !isNaN(minFolicAcid)) { 
+                url += `&minFolicAcid=${minFolicAcid}`;
+            } else if (minFolicAcid) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxFolicAcid && !isNaN(maxFolicAcid)) { 
+                url += `&maxFolicAcid=${maxFolicAicd}`;
+            } else if (maxFolicAcid) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            if (minIodine && !isNaN(minIodine)) { 
+                url += `&minIodine=${minIodine}`;
+            } else if (minIodine) {  
+                displayError('Invalid Input. Must be an Integer');
+                return;                
+            }
+          
+            if (maxIodine && !isNaN(maxIodine)) { 
+                url += `&maxIodine=${maxIodine}`;
+            } else if (maxIodine) {  
+                displayError('Invalid Input. Must be an Integer');
+             return;                
+            }
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('API response:', data);                  
+                if (Array.isArray(data) && data.length > 0) {
+                    const recipesWithDetails = await Promise.all(data.map(async recipe => {
+                        try {
+                             const {equipment, summary, nutrition, nutrients, taste, ingredients } = await fetchRecipeInfo(recipe.id, apiKey);                          
+                             return {...recipe, equipment, summary, nutrition, nutrients, taste, ingredients };
+                        } catch(error) {
+                             console.error('Error fetching recipe info for recipe:', recipe.id, error);
+                             return {...recipe, equipment:[], summary:'Summary not available', nutrition: {}, nutrients: {} };
+                        }
+                    }));                          
+                    displayResults(recipesWithDetails);
+                } else if (response.status === 402) {
+                    displayError('Your daily points of 150 has been reached. Please kindly purchase the app to continue using it.');                    
+                } else { 
+                    console.error('Unexpected API response format:', data);
+                    displayError('No Recipes found. Please try again');                  
+                } 
+            } catch (error) { 
+                console.error('Error fetching recipes:', error); 
+                if (error.message === 'Failed to Fetch') {
+                   displayError('Error fetching recipes. Please try again');
+                } else {
+                   displayError('No internet coonection. Please check your internet connection.');
+                }
+            }
+            loadingOverlay.style.display = 'none';          
+        }
+  
+        function displayResults(recipes) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+            const fetchPromises = recipes.map(recipe => fetchRecipeInfo(recipe.id, apiKey)); 
+            Promise.all(fetchPromises) 
+                .then(recipeInfos => { 
+                    recipeInfos.forEach((recipeInfo, index) => { 
+                        const recipe = recipes[index]; 
+                        const recipeCard = document.createElement('div');
+                        recipeCard.className = 'recipe-card';
+                        recipeCard.innerHTML = `
+                        <h2>${recipe.title}</h2>
+                        <img src="${recipe.image}" alt="${recipe.title}">
+                        <p>Summary: ${recipeInfo.summary}</p>
+                        <h3>Ingredients</h3>
+                        <div class="ingredients-images">
+                        ${recipe.ingredients.map(ingredients => `<img src="https://spoonacular.com/cdn/ingredients_100x100/${ingredients.image}" alt="${ingredients.name}">`).join('')}
+                        </div>
+                        <ul>
+                        ${recipe.ingredients.map(ingredients => `<li>Name: ${ingredients.name}</li>`).join('')}
+                        </ul>
+                        <ul>
+                        ${recipe.ingredients.map(ingredients => `<li>Us Measurement: ${ingredients.amount.us.value} ${ingredients.amount.us.unit}</li> <li>Metric Measurement: ${ingredients.amount.metric.value} ${ingredients.amount.metric.unit}</li>`).join('')}  
+                        </ul>
+                        <div>
+                            <h3>Nutritional Information</h3>
+                            ${recipeInfo.nutrients.nutrients.map(nutrient => `
+                                <p>${nutrient.name}: ${nutrient.amount} ${nutrient.unit} (${nutrient.percentOfDailyNeeds} of daily needs)</p>
+                            `).join('')} 
+                            <div>
+                                <h4>Caloric Breakdown:</h4>
+                                <p>Percent Protein: ${recipeInfo.nutrients.caloricBreakdown.percentProtein}%</p>
+                                <p>Percent Fat: ${recipeInfo.nutrients.caloricBreakdown.percentFat}%</p>
+                                <p>Percent Carbs: ${recipeInfo.nutrients.caloricBreakdown.percentCarbs}%</p>
+                            </div>
+                            <div>
+                                <h4>Weight Per Serving:</h4>
+                                <p>${recipeInfo.nutrients.weightPerServing.amount} ${recipeInfo.nutrients.weightPerServing.unit}</p>
+                            </div>  
+                        </div>
+                        <h3>Taste Information</h3>
+                        <p>Sweetness: ${recipe.taste.sweetness}</p>
+                        <p>Saltiness: ${recipe.taste.saltiness}</p>
+                        <p>Sourness: ${recipe.taste.sourness}</p>
+                        <p>Bitterness: ${recipe.taste.bitterness}</p>
+                        <p>Fattiness: ${recipe.taste.fattiness}</p>
+                        <p>Spiciness: ${recipe.taste.spiciness}</p>                                  
+                        <h3>Nutritional Information</h3>
+                        <ul>
+                            <li>Source Name: ${recipeInfo.nutrition.sourceName}</li>
+                        </ul>
+                        <h3>Equipment</h3>
+                        <div class="equipment-images">
+                          ${recipeInfo.equipment.map(equipment => `<img src="https://spoonacular.com/cdn/equipment_100x100/${equipment.image}" alt="${equipment.name}">`).join('')}
+                        </div>
+                      <ul>
+                          ${recipeInfo.equipment.map(equipment => `<li>${equipment.name}</li>`).join('')}
+                      </ul>
+                      <a href="https://spoonacular.com/recipes/${recipe.title.replace(/ /g, '-').toLowerCase()}-${recipe.id}" target="_blank">View Recipe</a>
+                    `;
+                    resultsContainer.appendChild(recipeCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching recipe info:', error);
+                displayError('Error fetching recipe info. pPlease try again.');
+            })
+        }         
+    </script>
+</body>
+</html>

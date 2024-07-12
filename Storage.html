@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage</title>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/odf/dist/odf.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333; /* Dark grey background */
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin: 0; /* Remove default margin */
+        }
+
+        header {
+            background-color: white; /* White header */
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px; /* Spacing below header */
+            height: 100px;
+        }
+
+        .header-section {
+            flex: 1;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .header-section a {
+            text-decoration: none;
+            color: black;
+            font-size: 24px; /* Larger font size */
+        }
+
+        .plus-icon {
+            position: absolute;
+            top: 150px; /* Adjust top position as needed */
+            right: 100px; /* Adjust right position as needed */
+            cursor: pointer;
+            font-size: 54px;
+        }
+
+        .modal {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+            border-radius: 8px;
+            text-align: left;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .text-area {
+            width: calc(100% - 40px);
+            height: 300px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #333;
+            font-size: 16px;
+            resize: vertical;
+            white-space: pre-wrap;
+            overflow: auto;
+        }
+
+        .formatting-options {
+            margin-bottom: 20px;
+        }
+
+        .formatting-options button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .formatting-options button:hover {
+            background-color: #2980b9;
+        }
+
+        .attachment {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .word-count,
+        .grammar-check {
+            float: none;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .save-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .save-button:hover {
+            background-color: #2980b9;
+        }
+
+        .recipe-list {
+            text-align: left;
+            margin-top: 120px;
+            padding: 10px;
+            background-color: #555; /* Dark grey body */
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            position: relative; /* Ensure relative position for absolute positioning */
+        }
+
+        .recipe {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #666;
+            color: white;
+            padding-right: 30px;
+        }
+
+        .recipe:hover {
+            background-color: #888;
+        }
+
+        .bold-text { font-weight: bold; }
+        .italic-text { font-style: italic; }
+        .underline-text { text-decoration: underline; }
+        .left-align { text-align: left; }
+        .center-align { text-align: center; }
+        .right-align { text-align: right; }
+        .word-wrap { white-space: pre-wrap; }
+
+        .title-container {
+            margin-bottom: 20px;
+        }
+
+        .title-container input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #333;
+        }
+
+        .search-container {
+            position: absolute;
+            top: 160px;
+            right: 500px;
+            display: flex;
+            align-items: center;
+            background-color: #444;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .search-container input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #333;
+        }
+
+        .search-container input[type="text"]::placeholder {
+            color: #aaa;
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .delete-button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            float: right;
+            margin-left: 10px;
+        }
+
+        .undo-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .undo-button {
+            color: blue;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .login-container {
+            text-align: center;
+            margin-top: 150px; /* Adjust as needed */
+            position: relative;
+        }
+
+        .login-button, .signup-button {
+            width: 350px;
+            height: 60px;
+            background-color: #fff;
+            color: black;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .login-button:hover, .signup-button:hover {
+            opacity: 0.8;
+        }
+
+        .logo-mask {
+            position: absolute;
+            top: 19px; /* Adjust as needed */
+            left: 10%; /* Center horizontally */
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10; /* Ensure its above other content */
+        }
+            </style>
+</head>
+<body>
+    <header>
+        <div class="header-section">
+          <li><a href="#local-storage" id="localstorage-link">Local Storage</a></li>
+            <div class="header-section">
+                <div class="search-container">
+                  <input type="text" id="searchInput" placeholder="Search by title...">
+                  <span class="search-icon">&#128269;</span>
+                </div>
+                <span class="plus-icon" id="addRecipeButton">+</span>
+            </div>
+        </div>
+        <div class="header-section">
+          <li><a href="#cloud-storage" id="cloudstorage-link">Cloud Storage</a></li>
+          </div>
+    </header>
+
+    <main>
+        <section id="local-storage" class="local-storage">
+            <div id="recipeList" class="recipe-list">
+                <!-- Recipes will be displayed here -->
+            </div>
+        </section>
+
+        <section id="cloud-storage" class="cloud-storage" style="display: none;">
+            <div id="cloudRecipeList" class="recipe-list">
+                <!-- Cloud recipes will be displayed here -->
+            </div>
+        </section>
+    </main>
+    
+    <div class="logo-mask">
+    <!-- Insert your logo image here -->
+       <img src="Logo.jpeg" alt="Logo" width="100">
+    </div>
+
+    <div class="login-container" style="display: none;">
+        <button class="login-button" id="login-button">Login</button>
+        <button class="signup-button" id="signup-button">Sign Up</button>
+        <p>Log in to your Cloud Account</p>
+        <p>Sign up and make Payment to use Cloud Features</p>
+    </div>
+    
+    <!-- Pop-up Modal for adding recipes -->
+    <div id="addRecipeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Add Recipe</h3>
+            <div class="modal-header">
+                <button class="add-text-recipe-button" id="addTextRecipeButton">Add Recipe by Text</button>
+                <button class="add-file-recipe-button" id="addFileRecipeButton">Add Recipe from File</button>
+                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt,.odt">
+            </div>
+            <div id="addRecipeByText" style="display: none; margin-top: 20px;">
+                <div class="formatting-options">
+                    <button id="boldButton"><strong>B</strong></button>
+                    <button id="italicButton"><em>I</em></button>
+                    <button id="underlineButton"><u>U</u></button>
+                    <button id="leftAlignButton">Left</button>
+                    <button id="centerAlignButton">Center</button>
+                    <button id="rightAlignButton">Right</button>
+                    <button id="wordWrapButton">Wrap</button>
+                    <select id="fontSizeSelect">
+                        <option value="">Default Font Size</option>
+                        <option value="1">8px</option>
+                        <option value="2">12px</option>
+                        <option value="3">16px</option>
+                        <option value="4">22px</option>
+                        <option value="5">26px</option>
+                        <option value="6">30px</option>
+                        <option value="7">36px</option>
+                    </select>
+                    <select id="fontStyleSelect">
+                      <option value="Arial">Arial</option>
+                      <option value="Courier New">Courier New</option>
+                      <option value="Georgia">Georgia</option>
+                      <option value="Times New Roman">Times New Roman</option>
+                      <option value="Verdana">Verdana</option>
+                      <option value="Tahoma">Tahoma</option>
+                      <option value="Trebuchet MS">Trebuchet MS</option>
+                      <option value="Calibri">Calibri</option>
+                      <option value="Cascadia Code">Cascadia Code</option>
+                      <option value="Comic Sans MS">Comic Sans MS</option>
+                    </select>
+                </div>
+                <div class="title-container">
+                  <input type="text" id="titleInput" placeholder="...Add Title">
+                </div>
+                <div class="text-area" id="recipeTextArea" contenteditable="true" placeholder="Enter Recipe Details..."></div>
+                <button class="save-button" id="saveRecipeButton">Save Recipe</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const addRecipeButton = document.getElementById('addRecipeButton');
+        const addRecipeModal = document.getElementById('addRecipeModal');
+        const closeModal = document.querySelector('.close');
+        const recipeTextArea = document.getElementById('recipeTextArea');
+        const saveRecipeButton = document.getElementById('saveRecipeButton');
+        const addTextRecipeButton = document.getElementById('addTextRecipeButton');
+        const addFileRecipeButton = document.getElementById('addFileRecipeButton');
+        const fileInput = document.getElementById('fileInput');
+        const addRecipeByText = document.getElementById('addRecipeByText');
+        const loginButton = document.querySelector('.login-button');
+        const signupButton = document.querySelector('.signup-button');
+  
+        loginButton.addEventListener('click', function() {
+            window.location.href = 'Login Page.html';
+        });
+  
+        signupButton.addEventListener('click', function() {
+            window.location.href = 'addRecipeByText';
+        });
+  
+        function toggleCloudStorageView(showCloudStorage) {
+            const addRecipeButton = document.getElementById('addRecipeButton');
+            const searchContainer = document.querySelector('.search-container');
+            const loginContainer = document.querySelector('.login-container');
+            if (showCloudStorage) {
+                addRecipeButton.style.display = 'none';
+                searchContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+            } else {
+                addRecipeButton.style.display = 'block';
+                searchContainer.style.display = 'block';
+                loginContainer.style.display = 'none';
+            }
+        }
+    
+        function toggleLocalStorageView(showLocalStorage) {
+            const addRecipeButton = document.getElementById('addRecipeButton');
+            const searchContainer = document.querySelector('.search-container');
+            const loginContainer = document.querySelector('.login-container');
+            if (showLocalStorage) {
+                addRecipeButton.style.display = 'block';
+                searchContainer.style.display = 'block';
+                loginContainer.style.display = 'none';
+            } else {
+                addRecipeButton.style.display = 'none';
+                searchContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+            }
+        }
+        
+        addRecipeButton.addEventListener('click', () => {
+            addRecipeModal.style.display = 'block';
+            searchInput.value = '';
+            displayRecipes('');
+        });
+  
+        addFileRecipeButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+  
+        fileInput.addEventListener('change', handleFileUpload);
+  
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) { 
+                const content = await readFileContent(file); 
+                recipeTextArea.innerHTML = content; 
+                addRecipeByText.style.display = 'block'; // Show the text editor 
+            } 
+        });   
+  
+        closeModal.addEventListener('click', () => {
+            addRecipeModal.style.display = 'none';
+            addRecipeByText.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === addRecipeModal) {
+                addRecipeModal.style.display = 'none';
+                addRecipeByText.style.display = 'none';
+            }
+        });
+
+        addTextRecipeButton.addEventListener('click', () => {
+            addRecipeByText.style.display = 'block';
+        });
+  
+        saveRecipeButton.addEventListener('click', () => {
+            saveRecipe();
+        });
+  
+        document.getElementById('cloudstorage-link').addEventListener('click', () => {
+            toggleCloudStorageView(true);
+        }); 
+        
+        document.getElementById('localstorage-link').addEventListener('click', () => {
+            toggleLocalStorageView(true);
+        }); 
+      
+        document.getElementById('fontSizeSelect').addEventListener('change', function() {
+            document.execCommand('fontSize', false, this.value);
+        }); 
+          
+        document.getElementById('fontStyleSelect').addEventListener('change', function() {
+            document.execCommand('fontName', false, this.value);
+        }); 
+        
+        const contentEditable = document.getElementById('recipeTextArea');
+
+        contentEditable.addEventListener('input', () => { 
+            const text = contentEditable.innerText || contentEditable.textContent; 
+        });
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            displayRecipes();
+        });
+  
+        let editingRecipeIndex = -1;
+        let recipeCounter = 0;
+  
+        function generateId() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function showUndoNotification(recipeItem) {
+            const notification = document.createElement('div');
+            notification.classList.add('undo-notification');
+            notification.innerHTML = 'Recipe deleted. <span class="undo-button">Undo</span>';
+            document.body.appendChild(notification);
+
+            notification.addEventListener('click', () => {
+                document.getElementById('recipeList').appendChild(recipeItem);          
+                notification.remove();
+            });
+
+            setTimeout(() => {
+                notification.remove();
+            }, 15000); // Hide after 15 seconds
+        }
+
+        function calculateLocalStorageSize() { 
+            let total = 0; 
+            for (let key in localStorage) { 
+                if (localStorage.hasOwnProperty(key)) { 
+                  total += (localStorage[key].length * 2); // Each character in UTF-16 format 
+                } 
+            } 
+            return total; 
+        }
+        displayRecipes('');
+  
+        function saveRecipe() {
+            const recipeText = recipeTextArea.innerHTML;
+            const recipeTitle = document.getElementById('titleInput').value.trim();
+          
+            if (recipeTitle == '') {
+                alert('Please enter a title for your recipe.');
+                return;
+            }
+            
+            const recipeId = editingRecipeIndex !== -1 ? document.querySelector('.recipe:nth-child(' + (editingRecipeIndex + 1) + ')').getAttribute('data-id') : generateId();
+            const recipeData = {
+                id: recipeId,
+                title: recipeTitle,
+                content: recipeText
+            };
+          
+            const storageSize = calculateLocalStorageSize(); 
+            const recipeDataSize = JSON.stringify(recipeData).length * 2; // Size in UTF-16 format 
+            if (storageSize + recipeDataSize > 10 * 1024 * 1024) { // 100 MB in bytes 
+                alert('Your storage is full. Please delete some recipes to free up space.'); 
+                return; 
+            }
+            try {          
+                localStorage.setItem(recipeId, JSON.stringify(recipeData)); 
+                sessionStorage.setItem(recipeId, JSON.stringify(recipeData));
+            } catch (e) {
+                console.error('Error saving recipe:', e);
+            }
+          
+            if (editingRecipeIndex !== -1) {
+                updateRecipeInList(editingRecipeIndex, recipeText, recipeTitle, recipeId);
+            } else {
+                addRecipeToList(recipeText, recipeTitle, recipeId);
+            }
+            recipeTextArea.innerHTML = '';
+            document.getElementById('titleInput').value = '';
+            addRecipeModal.style.display = 'none';
+            addRecipeByText.style.display = 'none';
+            editingRecipeIndex = -1;
+          
+            displayRecipes()
+        }
+          
+// Function to add or update a recipe in the list
+        function addOrUpdateRecipe(recipeContent) {
+            if (editingRecipeIndex !== -1) {
+        // Update existing recipe
+                updateRecipeInList(editingRecipeIndex, recipeContent);
+            } else {
+        // Add new recipe
+                addRecipeToList(recipeContent);
+            }
+        }
+
+// Function to update a recipe in the list
+        function updateRecipeInList(index, content, title, id) {
+            const recipes = document.querySelectorAll('.recipe');
+            const existingRecipe = document.querySelector(`.recipe[data-id="${id}"]`); 
+          
+            if (existingRecipe) { 
+                existingRecipe.querySelector('h3').textContent = title; // Update title 
+                existingRecipe.querySelector('div').innerHTML = content; // Update content 
+            } else { 
+                const recipeItem = document.createElement('div'); 
+                recipeItem.classList.add('recipe'); 
+                recipeItem.innerHTML = ` 
+                    <h3>${title}</h3> 
+                    <div>${content}</div> 
+                `; 
+                recipeItem.setAttribute('data-title', title); 
+                recipeItem.setAttribute('data-id', id); 
+              
+                const deleteButton = document.createElement('button'); 
+                deleteButton.innerHTML = 'x'; 
+                deleteButton.classList.add('delete-button'); 
+                deleteButton.addEventListener('click', (event) => { 
+                    event.stopPropagation(); 
+                    showUndoNotification(recipeItem); 
+                    recipeItem.remove(); 
+                    deleteRecipe(id); 
+                }); 
+                recipeItem.appendChild(deleteButton); 
+              
+                recipeItem.addEventListener('click', () => { 
+                    recipeTextArea.innerHTML = content; 
+                    editingRecipeIndex = Array.from(recipeItem.parentNode.children).indexOf(recipeItem); 
+                    document.getElementById('titleInput').value = title; 
+                    addRecipeModal.style.display = 'block'; 
+                    addRecipeByText.style.display = 'block'; 
+                }); 
+                document.getElementById('recipeList').appendChild(recipeItem); 
+            }       
+        }
+
+        // Function to open the modal for adding a new recipe
+        function openAddRecipeModal() {
+    // Clear the modal fields
+            recipeTextArea.innerHTML = '';
+            document.getElementById('titleInput').value = '';
+
+    // Set the modal to the default state
+            editingRecipeIndex = -1;
+            addRecipeModal.style.display = 'block';
+            addRecipeByText.style.display = 'block';
+        }
+
+// Add event listener to the plus icon to open the modal
+        document.getElementById('addRecipeButton').addEventListener('click', openAddRecipeModal);
+        document.getElementById('addFileRecipeButton').addEventListener('click', openAddRecipeModal);
+
+// Function to add a recipe to the list
+        function addRecipeToList(content, title, id) {
+            const existingRecipeItem = document.querySelector(`.recipe[data-id="${id}"]`);
+            if (existingRecipeItem) {
+                updateRecipeInList(editingRecipeIndex, content, title, id);
+                } else {
+                const recipeItem = document.createElement('div');          
+                recipeItem.classList.add('recipe');
+                recipeItem.innerHTML = `
+                      <h3>${title}</h3>
+                      <div>${content}</div>              
+                `;
+                recipeItem.setAttribute('data-title', title);
+                recipeItem.setAttribute('data-id', id);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = 'x';
+                deleteButton.classList.add('delete-button');
+                deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    showUndoNotification(recipeItem);
+                    recipeItem.remove()
+                    deleteRecipe(recipeId);
+                });
+                recipeItem.appendChild(deleteButton);
+          
+                recipeItem.addEventListener('click', () => {
+                    recipeTextArea.innerHTML = content;
+                    editingRecipeIndex = Array.from(recipeItem.parentNode.children).indexOf(recipeItem);
+                    document.getElementById('titleInput').value = title;
+                    addRecipeModal.style.display = 'block';
+                    addRecipeByText.style.display = 'block';
+                });
+
+                document.getElementById('recipeList').appendChild(recipeItem);
+                
+            }  
+        }
+  
+        function displayRecipes() { 
+            const recipeList = document.getElementById('recipeList'); 
+            recipeList.innerHTML = ''; // Clear existing list 
+            for (let i=0; i < localStorage.length; i++) {
+                 const key = localStorage.key(i);
+                 const recipeData = JSON.parse(localStorage.getItem(key));
+               
+                 const recipeItem = document.createElement('div'); 
+                 recipeItem.classList.add('recipe'); 
+                 recipeItem.setAttribute('data-title', recipeData.title); 
+                 recipeItem.setAttribute('data-id', recipeData.id); // Add delete button 
+                 recipeItem.innerHTML = ` 
+                      <h3>${recipeData.title}</h3> 
+                      <div>${recipeData.content}</div> 
+                 `;
+              
+                 const deleteButton = document.createElement('button'); 
+                 deleteButton.innerHTML = 'x'; 
+                 deleteButton.classList.add('delete-button'); 
+                 deleteButton.addEventListener('click', (event) => { 
+                    event.stopPropagation(); 
+                    showUndoNotification(recipeItem); 
+                    recipeItem.remove(); 
+                    deleteRecipe(recipeData.id); // Remove from local storage 
+                 }); 
+                 recipeItem.appendChild(deleteButton); // Add click event to edit recipe 
+              
+                 recipeItem.addEventListener('click', () => { 
+                    recipeTextArea.innerHTML = recipeData.content; 
+                    editingRecipeIndex = Array.from(recipeItem.parentNode.children).indexOf(recipeItem); 
+                    document.getElementById('titleInput').value = recipeItem.getAttribute('data-title');  
+                    addRecipeModal.style.display = 'block'; 
+                    addRecipeByText.style.display = 'block';                  
+                 }); 
+                 recipeList.appendChild(recipeItem);  
+            } 
+        }
+        
+        console.log('Stored Recipes:', localStorage);
+  
+        function deleteRecipe(id) {
+            localStorage.removeItem(id);
+            sessionStorage.removeItem(id);
+            displayRecipes();
+        }
+  
+        window.onload = function() {
+            displayRecipes();
+        };
+  
+        function readFileContent(file) {
+            return new Promise((resolve, reject) => {
+                const fileType = file.type;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const fileType = file.type;
+                    if (fileType === 'application/pdf') {
+                        pdfToText(event.target.result).then(resolve).catch(reject);
+                    } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                               fileType === 'application/msword' || fileType === 'application/vnd.oasis.opendocument.text') {
+                        mammoth.extractRawText({ arrayBuffer: event.target.result })
+                            .then(result => resolve(result.value))
+                            .catch(reject);
+                    } else if (fileType === 'text/plain') {
+                        resolve(event.target.result);
+                    } else {
+                        reject('Unsupported file type');
+                    }
+                };
+                if (fileType === 'application/pdf') {
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            });
+        }
+
+        function pdfToText(arrayBuffer) {
+            return pdfjsLib.getDocument(arrayBuffer).promise.then(pdf => {
+                const pages = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    pages.push(pdf.getPage(i).then(page => page.getTextContent().then(textContent =>
+                        textContent.items.map(item => item.str).join(' ')
+                    )));
+                }
+                return Promise.all(pages).then(pageTexts => pageTexts.join('\n'));
+            });
+        }
+  
+        function handleFileUpload(event) { 
+            const file = event.target.files[0]; 
+            if (file) { 
+                const reader = new FileReader();
+                const fileType = file.type;              
+                reader.onload = function (e) { 
+                    const fileType = file.type; 
+                    if (fileType === 'application/pdf') { 
+                        pdfToText(e.target.result); 
+                    } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                        fileType === 'application/msword' || 
+                        fileType === 'application/vnd.oasis.opendocument.text') { 
+                          // Use a library like mammoth.js to extract text from Word and OpenOffice files 
+                        mammoth.extractRawText({ arrayBuffer: e.target.result }) 
+                            .then(function (result) { 
+                              recipeTextArea.innerHTML = result.value; 
+                              addRecipeBYText.style.display = 'block';
+                            }) 
+                            .catch(function (err) { 
+                              console.error(err); 
+                            }); 
+                    } else if (fileType === 'text/plain') { 
+                        recipeTextArea.innerHTML = e.target.result; 
+                        addRecipeByText.style.display = 'block';
+                    } else { 
+                      alert('Unsupported file type'); 
+                    } 
+                }; 
+                if (fileType === 'application/pdf') { 
+                    reader.readAsArrayBuffer(file); 
+                } else { 
+                    reader.readAsText(file); 
+                } 
+            } 
+        } 
+  
+        function pdfToText(arrayBuffer) { 
+            pdfjsLib.getDocument(arrayBuffer).promise.then(function (pdf) { 
+                let text = ''; 
+                const pages = []; 
+                for (let i = 1; i <= pdf.numPages; i++) { 
+                     pages.push(pdf.getPage(i).then(function (page) { 
+                        return page.getTextContent().then(function (textContent) { 
+                            return textContent.items.map(item => item.str).join(' '); 
+                        }); 
+                     })); 
+                } 
+                Promise.all(pages).then(function (pageTexts) { 
+                    text = pageTexts.join('\n'); 
+                    recipeTextArea.innerHTML = text; 
+                }); 
+            }); 
+        }       
+  
+        // Formatting buttons functionality
+        document.getElementById('boldButton').addEventListener('click', () => {
+            document.execCommand('bold', false, null);
+        });
+
+        document.getElementById('italicButton').addEventListener('click', () => {
+            document.execCommand('italic', false, null);
+        });
+
+        document.getElementById('underlineButton').addEventListener('click', () => {
+            document.execCommand('underline', false, null);
+        });
+  
+        function searchRecipes() {
+            const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+            const recipes = document.querySelectorAll('.recipe');
+          
+            recipes.forEach(recipe => {
+                const title = recipe.getAttribute('data-title').toLowerCase();
+                const id = recipe.getAttribute('data-id');
+              
+                if (title.includes(searchInput) || id.includes(searchInput)) {
+                    recipe.style.display = 'block';
+                } else {
+                    recipe.style.display = 'none';
+                }
+            });
+        }
+  
+// Function to display recipes based on search input
+        function displaySearchRecipes(searchInput) {
+            const recipes = document.querySelectorAll('.recipe');
+            recipes.forEach(recipe => {
+                recipe.style.display = 'block';
+            })
+        }
+  
+        document.querySelector('.search-icon').addEventListener('click', searchRecipes);
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                searchRecipes();
+            }
+        });
+  
+        // Add this function to handle displaying all recipes
+        function displayAllRecipes() {
+            const recipes = document.querySelectorAll('.recipe');
+            recipes.forEach(recipe => {
+                recipe.style.display = '';
+            });
+        }
+
+// Modify your existing search functionality
+        document.getElementById('searchInput').addEventListener('input', () => {
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    
+            if (searchTerm === '') {
+                displayAllRecipes();  // Display all recipes if search input is empty
+            } else {
+                const recipes = document.querySelectorAll('.recipe');
+                recipes.forEach(recipe => {
+                    const title = recipe.getAttribute('data-title').toLowerCase();
+                    if (title.includes(searchTerm)) {
+                        recipe.style.display = '';
+                    } else {
+                        recipe.style.display = 'none';
+                    }
+                });
+            }
+        });
+         
+        // Word wrap button functionality
+        document.getElementById('wordWrapButton').addEventListener('click', () => {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const text = range.toString().trim();
+            const words = text.split(' ');
+
+            const wrappedText = words.join('\n');
+            document.execCommand('insertText', false, wrappedText);
+        });
+
+          // Text alignment buttons functionality
+        const alignmentButtons = {
+            leftAlignButton: 'justifyLeft',
+            centerAlignButton: 'justifyCenter',
+            rightAlignButton: 'justifyRight',
+        };
+
+        Object.keys(alignmentButtons).forEach(buttonId => {
+            const button = document.getElementById(buttonId);
+            button.addEventListener('click', () => {
+                document.execCommand(alignmentButtons[buttonId], false, null);
+            });
+        });
+    </script>
+</body>
+</html>

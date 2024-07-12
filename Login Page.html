@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+  <title>Login Page</title>
+  <style>
+    /* Styles for the overall body to set background image and other basic styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url('Grilled-Meat.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh; /* Ensures full viewport height */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative; /* Required for absolute positioning within */
+    }
+
+    /* Styles for the login form container */
+    .login-page {
+      max-width: 400px;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+      padding: 20px;
+      border-radius: 8px; /* Rounded corners */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Drop shadow for depth */
+    }
+
+    /* Styles for the login form elements */
+    .login-form {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+
+    .input-container {
+      margin-bottom: 15px;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 40px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      opacity: 0.8;
+    }
+
+    .login-options {
+      margin-top: 20px;
+    }
+
+    .login-google, .login-microsoft, .login-apple {
+      background-color: #4285F4; /* Google, Microsoft, Apple colors */
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .login-google:hover, .login-microsoft:hover, .login-apple:hover {
+      opacity: 0.8;
+    }
+
+    /* Styles for the white-masked logo */
+    .logo-mask {
+      position: absolute;
+      top: 20px; /* Adjust as needed */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 10; /* Ensure its above other content */
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Page -->
+  <div class="login-page">
+    <h2>Login to Your Cloud Account</h2>
+    <div class="login-form">
+      <div class="input-container">
+        <input type="text" placeholder="Username" required>
+      </div>
+      <div class="input-container">
+        <input type="password" placeholder="Password" required>
+      </div>
+      <button class="login-btn">Login</button>
+      <div class="login-options">
+        <p>Or login with:</p>
+        <button class="login-google">Google</button>
+        <button class="login-microsoft">Microsoft</button>
+        <button class="login-apple">Apple</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- White-masked logo -->
+  <div class="logo-mask">
+    <!-- Insert your logo image here -->
+    <img src="Logo.jpeg" alt="Logo" width="100">
+  </div>
+  <script>
+       // Load Google Sign-In SDK
+      function onLoadGoogleCallback() {
+        gapi.load('auth2', function() {
+          const auth2 = gapi.auth2.init({
+            client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com' // Replace with your actual Google client ID
+          });
+
+    // Attach click event handler to Google login button
+          const googleLoginButton = document.querySelector('.login-google');
+          googleLoginButton.addEventListener('click', function() {
+            auth2.signIn().then(function(googleUser) {
+              const id_token = googleUser.getAuthResponse().id_token;
+        // Send id_token to your backend for verification
+        // Example: sendTokenToServer(id_token);
+              console.log('Google user signed in!');
+        // Redirect to your cloud storage page after successful login
+              window.location.href = 'cloud-storage.html'; // Replace with your actual cloud storage page URL
+            }).catch(function(error) {
+              console.error('Error signing in with Google:', error);
+            });
+          });
+        });
+      }
+   
+  </script>
+</body>
+</html>
