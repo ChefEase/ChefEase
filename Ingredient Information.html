@@ -146,11 +146,7 @@
                   messages: [{ role: "user", content: `Give me 15 educative facts about ${ingredientName}` }], 
                   max_tokens: 500,
                   temperature: 0.5,                
-              }); 
-          } catch (error) { 
-            console.error("Error fetching educational facts:", error); 
-            return "Error fetching facts"; 
-          }  
+              });  
       }
   
       document.body.addEventListener('keydown', function(event) {
