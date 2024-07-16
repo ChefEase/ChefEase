@@ -146,8 +146,7 @@
                   messages: [{ role: "user", content: `Give me 15 educative facts about ${ingredientName}` }], 
                   max_tokens: 500,
                   temperature: 0.5,                
-              }); // Process the respons
-              return response.choices[0]?.message?.content || "No facts found"; 
+              }); 
           } catch (error) { 
             console.error("Error fetching educational facts:", error); 
             return "Error fetching facts"; 
@@ -213,37 +212,37 @@
           document.getElementById('spinner').style.display = 'none';
           const resultsContainer = document.getElementById('results');
           resultsContainer.innerHTML = `
-              <h2>${spoonacularData.name}</h2>
-              <p>Amount: ${spoonacularData.amount}</p>
-              <p>Unit: ${spoonacularData.unit || 'N/A'}</p>
-              <p>Possible Units: ${spoonacularData.possibleUnits.join(' , ')}</p>
-              <p>Estimated Cost: $${(spoonacularData.estimatedCost.value / 100).toFixed(2)} per ${data.estimatedCost.unit}</p>
+              <h2>${data.name}</h2>
+              <p>Amount: ${data.amount}</p>
+              <p>Unit: ${data.unit || 'N/A'}</p>
+              <p>Possible Units: ${data.possibleUnits.join(' , ')}</p>
+              <p>Estimated Cost: $${(data.estimatedCost.value / 100).toFixed(2)} per ${data.estimatedCost.unit}</p>
               <h3>Nutrients</h3>
               <ul>
-                  ${spoonacularData.nutrition.nutrients.map(n => `
+                  ${data.nutrition.nutrients.map(n => `
                       <li>${n.name}: ${n.amount} ${n.unit} (${n.percentOfDailyNeeds}% of daily needs)</li>
                   `).join('')}
               </ul>
               <h3>Properties</h3>
               <ul>
-                  ${spoonacularData.nutrition.properties.map( p => `
+                  ${data.nutrition.properties.map( p => `
                     <li>${p.name}: ${p.amount} ${p.unit}</li>
                   `).join('')}                    
               </ul>
               <h3>Flavonoids</h3>
               <ul>
-                  ${spoonacularData.nutrition.flavonoids.map(f => `
+                  ${data.nutrition.flavonoids.map(f => `
                       <li>${f.name}: ${f.amount} ${f.unit}</li>
                   `).join('')}
               </ul>
               <h3>Caloric Breakdown</h3>
-              <p>Protein: ${spoonacularData.nutrition.caloricBreakdown.percentProtein}%</p>
-              <p>Fat: ${spoonacularData.nutrition.caloricBreakdown.percentFat}%</p>
-              <p>Carbs: ${spoonacularData.nutrition.caloricBreakdown.percentCarbs}%</p>
+              <p>Protein: ${data.nutrition.caloricBreakdown.percentProtein}%</p>
+              <p>Fat: ${data.nutrition.caloricBreakdown.percentFat}%</p>
+              <p>Carbs: ${data.nutrition.caloricBreakdown.percentCarbs}%</p>
               <h3>Weight Per Serving</h3>
-              <p>${spoonacularData.nutrition.weightPerServing.amount} ${data.nutrition.weightPerServing.unit}</p>
+              <p>${data.nutrition.weightPerServing.amount} ${data.nutrition.weightPerServing.unit}</p>
               <h3>Category Path</h3>
-              <p>${spoonacularData.categoryPath.join(' > ')}</p>
+              <p>${data.categoryPath.join(' > ')}</p>
           `;
 
           document.getElementById('ingredientImage').src = `https://spoonacular.com/cdn/ingredients_500x500/${data.image}`;
