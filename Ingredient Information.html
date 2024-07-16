@@ -179,7 +179,7 @@
 
           try {  
             const spoonacularResponse = await fetch(`https://api.spoonacular.com/food/ingredients/search?apiKey=${apiKey}&query=${ingredientName}`)
-            const spoonacularData = await sponacularResponse.json()
+            const spoonacularData = await spoonacularResponse.json()
             if (spoonacularData.results.length > 0) {
                       const ingredientId = data.results[0].id;
                       const ingredientInfo = await fetchIngredientInformation(ingredientId, amount, unit);
