@@ -1,0 +1,24 @@
+name: Unzip Folder
+
+on:
+  push:
+    paths:
+      - @huggingface (1).zip
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Unzip file
+      run: unzip @hugginface (1).zip -d @huggingface
+    
+    - name: Commit unzipped files
+      run: |
+        git config --global user.email "onyiakamsy74@gmail.com"
+        git config --global user.name "ChefEase"
+        git add @huggingface/*
+        git commit -m "Unzipped @huggingface"
+        git push
