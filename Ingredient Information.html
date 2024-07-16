@@ -147,6 +147,12 @@
                   max_tokens: 500,
                   temperature: 0.5,                
               });  
+              const facts = response.data.messages.filter(msg => msg.role === 'system').map(msg => msg.content).join('\n');
+              return facts;
+        } catch (error) {
+              console.error('Error fetching educational facts:', error);
+              return ''; // Return empty string if fetching fails
+        }
       }
   
       document.body.addEventListener('keydown', function(event) {
