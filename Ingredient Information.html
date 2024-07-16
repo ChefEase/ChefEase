@@ -183,7 +183,7 @@
             if (spoonacularData.results.length > 0) {
                       const ingredientId = spoonacularData.results[0].id;
                       const ingredientInfo = await fetchIngredientInformation(ingredientId, amount, unit);
-                      const educationalFacts = await fetchEducationalFacts(ingredientName).
+                      const educationalFacts = await fetchEducationalFacts(ingredientName);
                       displayIngredientInformation(ingredientInfo);
                       displayEducationalFacts(educationalFacts);    
                       } else {
