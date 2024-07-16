@@ -145,7 +145,7 @@
                   model: "meta-llama/Meta-Llama-3-8B-Instruct", 
                   messages: [{ role: "user", content: `Give me 15 educative facts about ${ingredientName}` }], 
                   max_tokens: 500,
-                  temperature: 0.5;                
+                  temperature: 0.5,                
               }); // Process the respons
               return response.choices[0]?.message?.content || "No facts found"; 
           } catch (error) { 
