@@ -143,7 +143,7 @@
           try { 
               const response = await inference.chatCompletionStream({ 
                   model: "meta-llama/Meta-Llama-3-8B-Instruct", 
-                  messages: [{ role: "user", content: "Give me 15 educative facts about ${ingredientName}" }], 
+                  messages: [{ role: "user", content: "Complete the command Give me 15 educative facts about ${ingredientName}=" }], 
                   max_tokens: 500,
                   temperature: 0.5,
                   seed: 0,
@@ -155,7 +155,7 @@
               
                       if (data && data.data && Array.isArray(data.choices)) {
                           const facts = data.choices
-                              .filter(choice => choice.delta && choice.delta.role === 'user')
+                              .filter(choice => choice.delta && choice.delta.role === 'assistant')
                               .map(choice => choice.delta.content)
                               .join('\n'); 
                           return facts; 
