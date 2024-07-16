@@ -197,7 +197,7 @@
           }
       }
 
-      function fetchIngredientInformation(id, amount, unit) {
+      async function fetchIngredientInformation(id, amount, unit) {
           let url = `https://api.spoonacular.com/food/ingredients/${id}/information?apiKey=${apiKey}&amount=${amount}`;
 
           if (unit) {
