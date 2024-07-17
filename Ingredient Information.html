@@ -18,7 +18,7 @@
         .container {
           display: flex;
           flex-direction: column;
-          width: 80%;
+          width: 60%;
           height: 100vh;
           align-items: center;
           max-width: 1200px;
@@ -147,7 +147,7 @@
                       { role: "system", content: "You are a nutritionist who gives accurate educational factual information on food ingredients" },
                       { role: "user", content: `What are 15 educational facts about ${ingredientName}?` }
                   ], 	
-                  max_tokens: 500,
+                  max_tokens: 800,
                   temperature: 0.5                
               };
               let facts = '';
