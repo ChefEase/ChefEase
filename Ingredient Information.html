@@ -143,7 +143,7 @@
           for await (const chunk of inference.chatCompletionStream({ 	
               model: "meta-llama/Meta-Llama-3-8B-Instruct", 
               messages: [
-                  { role: "system", content: "You are a nutritionist who gives accurate educational factual information on food ingredients"}
+                  { role: "system", content: "You are a nutritionist who gives accurate educational factual information on food ingredients" }
                   { role: "user", content: `What are 15 educational facts about ${ingredientName}` }
               ], 	
               max_tokens: 500, 
