@@ -152,7 +152,7 @@
               };
               let facts = '';
               for await (const chunk of inference.chatCompletionStream(data)) {
-                  facts += chunk.choices[0]?.delta?.content || ""); 
+                  facts += chunk.choices[0]?.delta?.content || ""; 
               }
               return facts
           } catch (error) {
