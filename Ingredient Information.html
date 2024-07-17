@@ -140,19 +140,25 @@
       const inference = new HfInference("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");
       
        async function fetchEducationalFacts(ingredientName) { 
-          for await (const chunk of inference.chatCompletionStream({ 	
-              model: "meta-llama/Meta-Llama-3-8B-Instruct", 
-              messages: [
-                  { role: "system", content: "You are a nutritionist who gives accurate educational factual information on food ingredients" }
-                  { role: "user", content: `What are 15 educational facts about ${ingredientName}` }
-              ], 	
-              max_tokens: 500, 
-          })) 
-              { 
-              process.stdout.write(chunk.choices[0]?.delta?.content || ""); 
+          try {
+              const data = {
+                  model: "meta-llama/Meta-Llama-3-8B-Instruct", 
+                  messages: [
+                      { role: "system", content: "You are a nutritionist who gives accurate educational factual information on food ingredients" }
+                      { role: "user", content: `What are 15 educational facts about ${ingredientName}` }
+                  ], 	
+                  max_tokens: 500,
+                  temperature: 0.5                
+              );
+              for await (const chunk of inference.chatCompletionStream(data)) {
+                  process.stdout.write(chunk.choices[0]?.delta?.content || ""); 
+              }
+          } catch (error) {
+              console.error('Error fetching educational facts:', error);
+              return '';
           }
-       }
-    
+      }
+      
       document.body.addEventListener('keydown', function(event) {
           if (event.key === 'Enter') {
               searchIngredient();
