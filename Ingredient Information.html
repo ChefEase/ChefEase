@@ -150,9 +150,11 @@
                   max_tokens: 500,
                   temperature: 0.5                
               };
+              let facts = '';
               for await (const chunk of inference.chatCompletionStream(data)) {
-                  process.stdout.write(chunk.choices[0]?.delta?.content || ""); 
+                  facts += chunk.choices[0]?.delta?.content || ""); 
               }
+              return facts
           } catch (error) {
               console.error('Error fetching educational facts:', error);
               return '';
