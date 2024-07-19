@@ -64,7 +64,7 @@
 
         #reader {
           width: 100px; 
-          height: auto; 
+          height: 100vh; 
           margin: auto; 
           display: block;
           position: relative;
@@ -86,6 +86,7 @@
         <div id="results-container" class="results-container"></div>
     </main>
     <div id="reader"></div>
+    <div id="result"></div>
     <script>
         const apiKey = '61a1501880de4d18b24da750446320c6';
         const searchBar = document.getElementById('search-bar');
@@ -167,11 +168,12 @@
                 facingMode, // Use rear camera for mobile devices, front camera for others
                 {
                     fps: 10,    // Scans per second
-                    qrbox: { width: 300, height: 300 }  // Size of scanning box
+                    qrbox: { width: 3300, height: 3300 }  // Size of scanning box
                 },
                 qrCodeMessage => {
             // Handle QR code message
                     console.log("QR Code Message:", qrCodeMessage);
+                    document.getElementById('result').innerText = qrCodeMessage;
                     html5QrCode.stop();
                 },
                 errorMessage => {
