@@ -69,10 +69,26 @@
           display: block;
           position: relative;
         }
+
+        .logo-mask {
+          position: absolute;
+          top: 20px; /* Adjust as needed */
+          left: 10%; /* Center horizontally */
+          transform: translateX(-50%);
+          background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 10; /* Ensure its above other content */
+        }
+ 
     </style>
     <script src="https://ChefEase.github.io/ChefEase/html5-qrcode.min.js"></script>
 </head>
 <body>
+    <div class="logo-mask">
+    <!-- Insert your logo image here -->
+          <img src="Logo.jpeg" alt="Logo" width="100">
+    </div>
     <header>
         <h1>Packaged Products Search</h1>
         <button class="qr-button" onclick="openQRScanner()">QR Code Scanner</button>
