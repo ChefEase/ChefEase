@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingredient-Nutrient Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .images-container {
+      position: relative;
+      height: 500px; /* Adjust height as needed */
+      margin-bottom: 20px; /* Space between images and search container */
+      z-index: 10;
+    }
+
+    .images-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      max-width: 100px; /* Adjust image size */
+    }
+
+    .search-container {
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .input-group {
+      display: flex;
+      margin-top: 10px;
+    }
+
+    .input-group input, .input-group select {
+      flex: 1;
+      padding: 10px;
+      margin-right: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    #searchButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: black;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #searchButton:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    #errorMessages {
+      margin-top: 10px;
+      color: red;
+    }
+  
+    /* Spinner Styles */
+    .spinner {
+      display: none;
+      margin: 20px auto;
+      width: 50px;
+      height: 50px;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    #resultsContainer {
+      background-color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: auto; /* Adjust as needed */
+      height: auto; /* Adjust as needed */
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 20; /* Ensure it is on top of the images */
+      overflow-y: auto; /* Add scroll if content exceeds the height */
+    }
+  
+     .logo-mask {
+          position: absolute;
+          top: -6px; /* Adjust as needed */
+          left: 5%; /* Center horizontally */
+          transform: translateX(-50%);
+          background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 10; /* Ensure its above other content */
+      }
+ 
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Ingredient Nutrient Calculator</h1>
+      <p>Want to know how much ingredient you need to consume to get a certain amount of nutrient!</p>
+    </header>
+    <div class="logo-mask">
+    <!-- Insert your logo image here -->
+        <img src="Logo.jpeg" alt="Logo" width="80">
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="ingredient" placeholder="Enter Ingredient">
+      <button id="searchButton" disabled>Convert</button>
+      <div class="input-group">
+        <input type="text" id="amount" placeholder="Amount of nutrient" pattern="[0-9]*" title="Only numbers allowed">
+        <input type="text" id="unit" placeholder="Unit of nutrient">
+        <select id="nutrient">
+          <option value="">Select Nutrient</option>
+          <option value="protein">Protein(in g)</option>
+          <option value="fiber">Fiber(in g)</option>
+          <option value="vitaminA">Vitamin A(in IU)</option>
+          <option value="iron">Iron(in mg)</option>
+          <option value="calories">Calories(in kcal)</option>
+          <option value="fat">Fat(in g)</option>
+          <option value="transFat">Trans Fat(in g)</option>
+          <option value="saturatedFat">Saturated Fat(in g)</option>
+          <option value="monoUnsaturatedFat">Mono Unsaturated Fat(in g)</option>
+          <option value="polyUnsaturatedFat">Poly Unsaturated Fat(in g)</option>
+          <option value="cholesterol">Cholesterol(in mg)</option>
+          <option value="carbs">Carbohydrates(in g)</option>
+          <option value="alcohol">Alcohol(in g)</option>
+          <option value="fiber">Fiber(in g)</option>
+          <option value="sugar">Sugar(in g)</option>
+          <option value="sodium">Sodium(in mg)</option>
+          <option value="caffeine">Caffeine(in mg)</option>
+          <option value="potassium">Potassium(in mg)</option>
+          <option value="magnesium">Magnesium(in mg)</option>
+          <option value="calcium">Calcium(in mg)</option>
+          <option value="zinc">Zinc(in mg)</option>
+          <option value="phosphorus">Phosphorus(in mg)</option>
+          <option value="fluoride">Fluoride(in mg)</option>
+          <option value="vitaminA">Vitamin A(in IU)</option>
+          <option value="vitaminB1">Vitamin B1(in mg or IU)</option>
+          <option value="vitaminB2">Vitamin B2(in mg or IU)</option>
+          <option value="vitaminB3">Vitamin B3(in mg or IU)</option>
+          <option value="vitaminB5">Vitamin B5(in mg or IU)</option>
+          <option value="vitaminB6">Vitamin B6(in mg or IU)</option>
+          <option value="vitaminB12">Vitamin B12(in mg or IU)</option>
+          <option value="vitaminC">Vitamin C(in mg or IU)</option>
+          <option value="vitaminD">Vitamin D(in mg or IU)</option>
+          <option value="vitaminE">Vitamin E(in mg or IU)</option>
+          <option value="vitaminK">Vitamin K(in mg or IU)</option>
+                    
+        </select>
+      </div>
+      <div id="errorMessages"></div>
+    </div>
+    <div class="spinner" id="spinner"></div> <!-- Add Spinner --> 
+    <div id="resultsContainer"></div>
+    <div class="images-container">
+      <!-- Images will be dynamically inserted here -->
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const imagesContainer = document.querySelector('.images-container');
+      const searchButton = document.getElementById('searchButton');
+      const ingredientInput = document.getElementById('ingredient');
+      const amountInput = document.getElementById('amount');
+      const unitInput = document.getElementById('unit');
+      const nutrientSelect = document.getElementById('nutrient');
+      const errorMessages = document.getElementById('errorMessages');
+      const spinner = document.getElementById('spinner');
+      const resultsContainer = document.getElementById('resultsContainer');
+      
+      // Function to randomly position images within imagesContainer
+      function positionImages(images) {
+        images.forEach(img => {
+          const leftPos = Math.random() * (imagesContainer.offsetWidth - img.width);
+          const topPos = Math.random() * (imagesContainer.offsetHeight - img.height);
+          img.style.left = `${leftPos}px`;
+          img.style.top = `${topPos}px`;
+          imagesContainer.appendChild(img);
+        });
+      }
+
+      // Example: Loading images dynamically (replace with your own logic)
+      const imageSources = ['Image1.png', 'Image2.png', 'Image3.png', 'Image4.png', 'Image5.png', 'Image6.png', 'Image7.png', 'Image8.png', 'Image9.png', 'Image10.png' ]; // Replace with your image URLs
+      const images = imageSources.map(src => {
+        const img = new Image();
+        img.src = src;
+        img.classList.add('img-fluid'); // Add your CSS class for images if needed
+        return img;
+      });
+
+      // Position the images randomly
+      positionImages(images);
+
+      // Enable/disable search button based on input validity
+      function validateInputs() {
+        const ingredient = ingredientInput.value.trim();
+        const amount = amountInput.value.trim();
+        const unit = unitInput.value.trim();
+        const nutrient = nutrientSelect.value.trim();
+
+        const isIngredientValid = ingredient !== '';
+        const isAmountValid = amount !== '' && /^\d+$/.test(amount);
+        const isUnitValid = unit !== '';
+        const isNutrientValid = nutrient !== '';
+
+        if (isIngredientValid && isAmountValid && isUnitValid && isNutrientValid) {
+          searchButton.disabled = false;
+          errorMessages.textContent = '';
+        } else {
+          searchButton.disabled = true;
+          let errorMessage = '';
+          if (!isIngredientValid) errorMessage += 'Please enter an ingredient. ';
+          if (!isAmountValid) errorMessage += 'Invalid amount (only numbers allowed). ';
+          if (!isUnitValid) errorMessage += 'Please enter a unit. ';
+          if (!isNutrientValid) errorMessage += 'Please choose a nutrient. ';
+          errorMessages.textContent = errorMessage;
+        }
+      }
+
+      // Event listeners for input validation
+      ingredientInput.addEventListener('input', validateInputs);
+      amountInput.addEventListener('input', validateInputs);
+      unitInput.addEventListener('input', validateInputs);
+      nutrientSelect.addEventListener('change', validateInputs);
+
+      // Event listener for search button click
+      searchButton.addEventListener('click', () => {
+        const ingredient = ingredientInput.value.trim();
+        const amount = amountInput.value.trim();
+        const unit = unitInput.value.trim();
+        const nutrient = nutrientSelect.value.trim();
+          
+        spinner.style.display = 'block';
+        
+        // Replace with your Spoonacular API endpoint handling
+        const apiKey = '61a1501880de4d18b24da750446320c6';
+        // Use the ingredient ID from Spoonaculars ingredient search to construct the API endpoint
+        fetch(`https://api.spoonacular.com/food/ingredients/search?query=${ingredient}&apiKey=${apiKey}`)
+          .then(response => response.json())
+          .then(data => {
+            const ingredientId = data.results[0].id; // Assuming the first result has the correct ID
+            const apiUrl = `https://api.spoonacular.com/food/ingredients/${ingredientId}/amount?apiKey=${apiKey}&nutrient=${nutrient}&target=${amount}&unit=${unit}`;
+
+            // Example fetch request to get the amount of the ingredient needed
+            fetch(apiUrl)
+              .then(response => response.json())
+              .then(data => {
+                spinner.style.display = 'none';
+                const result = {
+                    amount: data.amount,
+                    unit: data.unit
+                };
+                resultsContainer.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;               // Replace with your logic to display results
+              })
+              .catch(error => {
+                console.error('Error fetching data:', error);
+              });
+          })
+          .catch(error => {
+            console.error('Error fetching ingredient ID:', error);
+            spinner.style.display = 'none';
+            resultsContainer.innerHTML = ('Error fetching data:', error);
+          });
+      });
+    });
+  </script>
+</body>
+</html>

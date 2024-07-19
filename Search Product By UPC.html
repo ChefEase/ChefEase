@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packaged Products Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        header {
+            background-color: blue;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+        }
+
+        .qr-button {
+            background-color: white;
+            color: blue;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .qr-button:hover {
+            background-color: lightgray;
+        }
+        hr {
+            margin: 0;
+            border: 1px solid blue;
+        }
+        main {
+            padding: 20px;
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            width: 50%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 2px solid blue;
+            font-size: 16px;
+            box-shadow: 3px 3px 5px grey;
+        }
+        .results-container {
+            border-top: 2px solid blue;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        #reader {
+          width: 300px; 
+          height: 300px; 
+          margin: auto; 
+          display: none; 
+        }
+    </style>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Packaged Products Search</h1>
+        <button class="qr-button" onclick="openQRScanner()">QR Code Scanner</button>
+    </header>
+    <hr>
+    <main>
+        <div class="search-container">
+            <label for="search-bar">Search packaged products by UPC</label>
+            <input type="text" id="search-bar" class="search-bar" placeholder="Enter UPC code">
+        </div>
+        <div id="results-container" class="results-container"></div>
+      <div id="reader"></div>
+    </main>
+    <script>
+        const apiKey = '61a1501880de4d18b24da750446320c6';
+        const searchBar = document.getElementById('search-bar');
+        const resultsContainer = document.getElementById('results-container');
+
+        document.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                fetchProductInfo();
+            }
+        });
+
+        async function fetchProductInfo() {
+            const query = searchBar.value.trim();
+            if (query === '') return;
+            
+            const apiUrl = `https://api.spoonacular.com/food/products/upc/${query}?apiKey=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error fetching product info:', error);
+                resultsContainer.innerHTML = '<p>Error fetching product info</p>';
+            }
+        }
+
+        function displayResults(data) {
+            resultsContainer.innerHTML = '';
+
+            if (data && data.title) {
+                const productItem = document.createElement('div');
+                productItem.innerHTML = `
+                    <h3>${data.title}</h3>
+                    <h3>Badges</h3>
+                    <p>Badges: ${data.badges.join(' , ')}</p>
+                    <h3>Breadcrumbs</h3>
+                    <p>Breadcrumbs: ${data.breadcrumbs.join(' , ') || 'No Breadcrumbs'}</p>
+                    <p>Number of Ingredients: ${data.ingredientCount}</p>
+                    <h3>List Of ingredients</h3>
+                    <p>${data.ingredientList.join(' , ')}</p>
+                    <h3>Description</h3>
+                    <p>${data.generatedText || 'No description available'}</p>
+                    <h3>Nutrients</h3>
+                      <ul>
+                        ${data.nutrition.nutrients.map(n => `
+                             <li>${n.name}: ${n.amount} ${n.unit} (${n.percentOfDailyNeeds}% of daily needs)</li>
+                        `).join('')}
+                      </ul>
+                    <h3>Caloric Breakdown</h3>
+                    <p>Protein: ${data.nutrition.caloricBreakdown.percentProtein}%</p>
+                    <p>Fat: ${data.nutrition.caloricBreakdown.percentFat}%</p>
+                    <p>Carbs: ${data.nutrition.caloricBreakdown.percentCarbs}%</p>
+                    <p>Product Price: ${data.price}$</p>
+                    <h3>Servings</h3>
+                    <p>Amount: ${data.servings.number}</p>
+                    <p>Feeding Size: ${data.servings.size}</p>
+                    <p>Unit: ${data.servings.unit}</p>
+                    <p>Spoonacular Score: ${data.spoonacularScore}</p>
+                    <p>Credits: ${data.credits.text}</p>
+                    <p>Link: ${data.credits.link}</p>
+                    <p>Credit Image: ${data.credits.image}</p>
+                    <p>Image Link: ${data.credits.imageLink}</p>              
+                    <img src="${data.images ? data.images[0] : 'no-image.png'}" alt="${data.title}" style="width: 100px; height: 100px;">
+                `;
+                resultsContainer.appendChild(productItem);
+            } else {
+                resultsContainer.innerHTML = '<p>No product found</p>';
+            }
+        }
+
+        function openQRScanner() {
+            const readerContainer = document.getElementById('reader'); 
+            readerContainer.style.display = 'block'; // Show the QR code scanner 
+            const html5QrCode = new Html5Qrcode("reader"); 
+            
+            html5QrCode.start( 
+                { facingMode: "environment" }, 
+                { 
+                    fps: 10, 
+                    qrbox: 250 
+                }, 
+                qrCodeMessage => { 
+                    html5QrCode.stop().then(ignore => { 
+                        fetchProductInfo(qrCodeMessage); 
+                        readerContainer.style.display = 'none'; // Hide the QR code scanner 
+                    }).catch(err => { 
+                        console.error('Error stopping QR code scanner:', err); 
+                    }); 
+                }, 
+                errorMessage => { 
+                    console.warn('QR code scan error:', errorMessage); 
+                } 
+          ).catch(err => { 
+              console.error('Unable to start scanning:', err);               
+          });
+        }
+    </script>
+</body>
+</html>

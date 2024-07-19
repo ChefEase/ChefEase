@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Grocery Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 35px;
+            background: url('Grocery-products-header-image.jpeg') no-repeat center center/cover;
+            margin: 20px;
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 48px;
+            color: black;
+        }
+
+        .header-subtitle {
+            font-size: 24px;
+            color: black;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-label {
+            font-size: 18px;
+            color: darkgrey;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .search-bar, .search-input {
+            width: 50%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 2px solid blue;
+            font-size: 16px;
+            margin-bottom: 10px;
+            box-shadow: 3px 3px 5px grey;
+        }
+
+        .search-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            width: 23%;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background-color: blue;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 3px 3px 5px grey;
+        }
+
+        .results-container {
+            border-top: 2px solid blue;
+            padding: 20px;
+            margin-top: 20px;
+        }
+  
+        .spinner { 
+            border: 4px solid rgba(0, 0, 0, 0.1); 
+            border-left-color: blue; 
+            border-radius: 50%; 
+            width: 30px; 
+            height: 30px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto; 
+            margin-top: 20px; 
+            display: none; /* Hidden by default */ 
+        } 
+  
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+  
+        .logo-mask {
+          position: absolute;
+          top: 20px; /* Adjust as needed */
+          left: 10%; /* Center horizontally */
+          transform: translateX(-50%);
+          background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 10; /* Ensure its above other content */
+        }
+ 
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="header-title">Search Packaged Products</h1>
+        <h2 class="header-subtitle">Search packaged products like pizza, beverages, ice-cream e.t.c</h2>
+    </header>
+    <main>
+        <div class="search-container">
+            <label for="search-bar" class="search-label">Enter ingredients</label>
+            <input type="text" id="search-bar" class="search-bar" placeholder="Enter Packaged Products">
+        </div>
+        <div class="search-input-container">
+            <input type="number" id="minCarbs" class="search-input" placeholder="Minimum Amount of Carbs in g(Optional) ">
+            <input type="number" id="maxCarbs" class="search-input" placeholder="Maximum Amount of Carbs in g(Optional)">
+            <input type="number" id="minFat" class="search-input" placeholder="Minimum Amount of Fat in g(Optional)">
+            <input type="number" id="maxFat" class="search-input" placeholder="Maximum Amount of Fat in g(Optional)">
+            <input type="number" id="minProtein" class="search-input" placeholder="Minimum Amount of Protein in g(Optional)">
+            <input type="number" id="maxProtein" class="search-input" placeholder="Maximum Amount of Protein in g(Optional)">
+            <input type="number" id="minCalories" class="search-input" placeholder="Minimum Amount of Calories(Optional)">
+            <input type="number" id="maxCalories" class="search-input" placeholder="Maximum Amount of Calories(Optional)">     
+        </div>  
+        <div class="search-container">
+            <button id="search-button" class="search-button">Search</button>
+        </div>
+        <div id="spinner" class="spinner"></div>
+        <img src="body.jpeg">
+        <div id="results-container" class="results-container"></div>
+        <div class="logo-mask">
+    <!-- Insert your logo image here -->
+          <img src="Logo.jpeg" alt="Logo" width="100">
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiKey = '61a1501880de4d18b24da750446320c6';
+            const searchBar = document.getElementById('search-bar');
+            const resultsContainer = document.getElementById('results-container');
+            const searchButton = document.getElementById('search-button');
+            const spinner = document.getElementById('spinner');
+
+            const minCarbs = document.getElementById('minCarbs');
+            const maxCarbs = document.getElementById('maxCarbs');
+            const minFat = document.getElementById('minFat');
+            const maxFat = document.getElementById('maxFat');
+            const minProtein = document.getElementById('minProtein');
+            const maxProtein = document.getElementById('maxProtein');
+            const minCalories = document.getElementById('minCalories');
+            const maxCalories = document.getElementById('maxCalories');
+
+            searchButton.addEventListener('click', () => {
+                const query = searchBar.value.trim();
+                let apiUrl = `https://api.spoonacular.com/food/products/search?apiKey=${apiKey}&query=${query}&number=1&addProductInformation=true`;
+
+                if (minCarbs.value) apiUrl += `&minCarbs=${minCarbs.value}`;
+                if (maxCarbs.value) apiUrl += `&maxCarbs=${maxCarbs.value}`;
+                if (minFat.value) apiUrl += `&minFat=${minFat.value}`;
+                if (maxFat.value) apiUrl += `&maxFat=${maxFat.value}`;
+                if (minProtein.value) apiUrl += `&minProtein=${minProtein.value}`;
+                if (maxProtein.value) apiUrl += `&maxProtein=${maxProtein.value}`;
+                if (minCalories.value) apiUrl += `&minCalories=${minCalories.value}`;
+                if (maxCalories.value) apiUrl += `&maxCalories=${maxCalories.value}`;
+              
+                spinner.style.display = 'block';
+              
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayResults(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching grocery products:', error);
+                    })
+                    .finally(() => {
+                        spinner.style.display = 'none';
+                    });
+            });
+
+            function displayResults(data) {
+                resultsContainer.innerHTML = '';
+
+                if (data.products && data.products.length > 0) {
+                    data.products.forEach(product => {
+                        const productItem = document.createElement('div');
+                        const imageUrl = `https://img.spoonacular.com/products/${product.id}-312x231.${product.imageType}`;
+                        productItem.innerHTML = `
+                            <h3>${product.title}</h3>
+                            <h3>Breadcrumbs</h3>
+                            <p>${product.breadcrumbs.join(' , ')}</p>
+                            <h3>Badges</h3>
+                            <p>${product.badges.join(' , ')}</p>
+                            <h3>Product Description</h3>
+                            <p>${product.description}</p> 
+                            <p>Number of Ingredients: ${product.ingredientCount}</p>
+                            <h3>List of Ingredients</h3>
+                            <p>${product.ingredientList.join(' , ')}</p>
+                            <p>Product Aisle: ${product.aisle}</p>
+                            <h3>Nutrients</h3>
+                              <ul>
+                                ${product.nutrition.nutrients.map(n => `
+                                     <li>${n.name}: ${n.amount} ${n.unit} (${n.percentOfDailyNeeds}% of daily needs)</li>
+                                `).join('')}
+                              </ul>
+                            <h3>Caloric Breakdown</h3>
+                            <p>Protein: ${product.nutrition.caloricBreakdown.percentProtein}%</p>
+                            <p>Fat: ${product.nutrition.caloricBreakdown.percentFat}%</p>
+                            <p>Carbs: ${product.nutrition.caloricBreakdown.percentCarbs}%</p>
+                            <p>Product Price: ${product.price}$</p>
+                            <h3>Servings</h3>
+                            <p>Amount: ${product.servings.number}</p>
+                            <p>Feeding Size: ${product.servings.size}</p>
+                            <p>Unit: ${product.servings.unit}</p>
+                            <p>Spoonacular Score: ${product.spoonacularScore}</p>
+                            <img src="${imageUrl}" alt="${product.title}" style="width: 100px; height: 100px;">
+                        `;
+                        resultsContainer.appendChild(productItem);
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<p>No products found</p>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
