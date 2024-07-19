@@ -175,7 +175,7 @@
                     if (isValidUrl(qrCodeMessage)) {
                         window.location.href = qrCodeMessage;
                     } else {
-                        const newWindow = window.open();
+                        const newWindow = window.open("", "_blank");
                         newWindow.document.write(`
                             <!DOCTYPE html> 
                             <html lang="en"> 
