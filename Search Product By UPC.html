@@ -64,7 +64,7 @@
 
         #reader {
           width: 700px; 
-          height: 700px; 
+          height: 700vh; 
           margin: auto; 
           display: block;
           position: relative;
@@ -172,8 +172,29 @@
                 },
                 qrCodeMessage => {
             // Handle QR code message
-                    console.log("QR Code Message:", qrCodeMessage);
-                    document.getElementById('result').innerText = qrCodeMessage;
+                    if (isValidUrl(qrCodeMessage)) {
+                        window.location.href = qrCodeMessage;
+                    } else {
+                        const newWindow = window.open();
+                        newWindow.document.write(`
+                            <!DOCTYPE html> 
+                            <html lang="en"> 
+                            <head> 
+                                  <meta charset="UTF-8"> 
+                                  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+                                  <title>QR Code Information</title> 
+                                  <style> 
+                                      body { font-family: Arial, sans-serif; padding: 20px; } 
+                              </style> 
+                            </head> 
+                            <body> 
+                                  <h1>QR Code Information</h1> 
+                                  <pre>${qrCodeMessage}</pre> 
+                            </body> 
+                            </html>
+                        `);
+                        newWindow.document.close();
+                    }  
                     html5QrCode.stop();
                 },
                 errorMessage => {
@@ -182,6 +203,15 @@
             ).catch(err => {
                 console.error("QR Code start error:", err);
             });
+        }
+  
+        function isValidUrl(str) {
+            try {
+                new URL(str);
+                return true;
+            } catch(_) {
+                return false;
+            }
         }
 
         navigator.mediaDevices.enumerateDevices()
