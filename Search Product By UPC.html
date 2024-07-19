@@ -157,28 +157,28 @@
         }
 
         function openQRScanner() {
-            const qrScanner = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-            qrScanner.start(
-                { facingMode: "environment" },
-                config,
-                (decodedText) => {
-                    qrScanner.stop().then(() => {
-                        searchBar.value = decodedText;
-                        fetchProductInfo(); // Use the scanned UPC code to fetch product info
-                    }).catch((err) => {
-                        console.error('Error stopping QR scanner:', err);
-                    });
+            // This function should open the QR scanner and handle the QR code scanning
+            const html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, // Use rear camera
+                {
+                    fps: 10,    // Scans per second
+                    qrbox: {width: 300, height: 300}  // Size of scanning box
                 },
-                (errorMessage) => {
-                    console.warn('QR scanning failed:', errorMessage);
+                qrCodeMessage => {
+                    // Handle QR code message
+                    console.log("QR Code Message:", qrCodeMessage);
+                    html5QrCode.stop();
+                    // Optionally navigate to another page with the scanned result
+                    window.location.href = `another-page.html?code=${qrCodeMessage}`;
+                },
+                errorMessage => {
+                    console.error("QR Code scanning error:", errorMessage);
                 }
-            ).catch((err) => {
-                console.error('Error starting QR scanner:', err);
+            ).catch(err => {
+                console.error("QR Code start error:", err);
             });
         }
-
     </script>
 </body>
 </html>
