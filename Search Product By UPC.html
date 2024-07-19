@@ -66,7 +66,8 @@
           width: 300px; 
           height: 300px; 
           margin: auto; 
-          display: none; 
+          display: none;
+          position: relative;
         }
     </style>
     <script src="https://ChefEase.github.io/ChefEase/html5-qrcode.min.js"></script>
@@ -163,7 +164,7 @@
                 { facingMode: "environment" }, // Use rear camera
                 {
                     fps: 10,    // Scans per second
-                    qrbox: {width: 300, height: 300}  // Size of scanning box
+                    qrbox: {width: 300, height: 300 }  // Size of scanning box
                 },
                 qrCodeMessage => {
                     // Handle QR code message
