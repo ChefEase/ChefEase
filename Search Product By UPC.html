@@ -158,20 +158,21 @@
         }
 
         function openQRScanner() {
-            // This function should open the QR scanner and handle the QR code scanning
+            const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+            const facingMode = isMobile ? { facingMode: "environment" } : { facingMode: "user" };
+
+    // This function should open the QR scanner and handle the QR code scanning
             const html5QrCode = new Html5Qrcode("reader");
             html5QrCode.start(
-                { facingMode: "environment" }, // Use rear camera
+                facingMode, // Use rear camera for mobile devices, front camera for others
                 {
                     fps: 10,    // Scans per second
-                    qrbox: {width: 300, height: 300 }  // Size of scanning box
+                    qrbox: { width: 300, height: 300 }  // Size of scanning box
                 },
                 qrCodeMessage => {
-                    // Handle QR code message
+            // Handle QR code message
                     console.log("QR Code Message:", qrCodeMessage);
                     html5QrCode.stop();
-                    // Optionally navigate to another page with the scanned result
-                    window.location.href = `another-page.html?code=${qrCodeMessage}`;
                 },
                 errorMessage => {
                     console.error("QR Code scanning error:", errorMessage);
@@ -180,6 +181,7 @@
                 console.error("QR Code start error:", err);
             });
         }
+
     </script>
 </body>
 </html>
