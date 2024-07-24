@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefEase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #f0f8ff; /* Light background for better visibility of food chunks */
+        }
+        .header {
+            background: linear-gradient(to right, #00008b, #ffffff);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            width: 100%;
+            z-index: 10; /* Keeps the header above the canvas */
+        }
+        .back-button {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 35px;
+            font-size: 30px;
+            position: fixed;
+            top: -10px;
+            left: -40px;
+            z-index: 10;
+        }
+  
+        #main-back-button {
+            display: none;
+            color: white;
+        }
+  
+        #random-recipe-back-button {
+            display: none;
+            color: black;
+            background: none;
+            border: none;
+            padding: 0px;
+            font-size: 60px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10
+        }          
+           
+        .back-button::before {
+            content: '←';
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap; /* Allows the exclude input to wrap below the main search bar */
+        }
+        #search-input, #exclude-input, #kitchen-equipment-input {
+            width: 50%;
+            padding: 6px;
+            font-size: 12px;
+        }
+  
+        #search-button, #options-dropdown {
+            padding: 6px 14px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        #options-dropdown {
+            padding: 6px;
+        }
+  
+        #random-recipe-header {
+            background-image: url('Burger.jpeg');
+            background-size: cover;
+            background-position: center;
+            position:relative;
+            width: 80%;
+            height: 80%; 
+            background-color: rgba(0,0,0,0.5);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+      
+        #randomize-button {
+            position: relative;
+            top: 0px; /* Adjust as needed */
+            right: -500px; /* Adjust as needed */
+            background-color: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            align-items: center;
+            z-index: 10; /* Ensure it stays above other content */
+        }
+
+        .randomize-button:hover {
+            background-color: #ff7000;
+        }
+
+        .add-tags-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 100px;
+            left: 150px;
+        }
+
+        .line {
+            flex: 1;
+            height: 1px;
+            background-color: #000;
+            position: relative;
+        }
+
+        .line.left::before,
+        .line.right::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 1px solid #000;
+            border-radius: 50%;
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .line.left::before {
+            left: -6px;
+        }
+
+        .line.right::after {
+            right: -6px;
+        }
+
+        .tags-input {
+            margin: 0 10px;
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background-color: #fff;
+            width: 200px;
+            box-shadow: 0 0 10;
+            transition: border-color 0.3s ease;
+        }
+  
+        #tags-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }  
+  
+        .exclude-tags-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 100px;
+            left: 150px;
+        }
+
+        .line1 {
+            flex: 1;
+            height: 1px;
+            background-color: #000;
+            position: relative;
+        }
+
+        .line1.left::before,
+        .line1.right::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 1px solid #000;
+            border-radius: 50%;
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .line1.left::before {
+            left: -6px;
+        }
+
+        .line1.right::after {
+            right: -6px;
+        }
+
+        .exclude-tags-input {
+            margin: 0 10px;
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background-color: #fff;
+            width: 200px;
+            box-shadow: 0 0 10;
+            transition: border-color 0.3s ease;
+        }
+  
+        #exclude-tags-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }  
+  
+        .panel {
+            position: fixed;
+            top: 0;
+            right: -300px; /* Initially hidden to the right */
+            width: 300px; /* Adjust width as needed */
+            height: 100%;
+            background-color: #007bff; /* Blue color */
+            transition: right 0.3s ease; /* Smooth transition animation */
+            z-index: 100; /* Ensure its above other content */
+        }
+
+        .panel-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #000;
+            font-size: 32px;
+            padding: 0px;
+            position: fixed;
+            top: 10px;
+            right: 60px; /* Adjust the positioning */
+            z-index: 100; /* Keep above panel content */
+        }
+  
+        .panel-open {
+            right: 0;
+        }           
+
+        .panel-content {
+            padding: 20px;
+            color: white;
+        }
+
+        .panel-content h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .panel-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .panel-content ul li {
+            margin-bottom: 10px;
+        }
+
+        .panel-content ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .panel-content ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Adjustments for small screens */
+        @media (max-width: 768px) {
+            .panel {
+                width: 250px;
+            }
+        }
+  
+        /* New styles for the tooltip */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 250px; /* Adjust as needed */
+            height: 150px;
+            background-color: #007bff; /* Blue color */
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            top: -100px; /* Position above the link */
+            left: -130px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+  
+        .tooltip-text a {
+            display: block;
+            margin: 5px 0;
+        }          
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+   
+        .tooltip1-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip1-text {
+            visibility: hidden;
+            width: 250px; /* Adjust as needed */
+            height: 100px;
+            background-color: #007bff; /* Blue color */
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            top: -100px; /* Position above the link */
+            left: -100px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+  
+        .tooltip1-text a {
+            display: block;
+            margin: 5px 0;
+        }          
+
+        .tooltip1-container:hover .tooltip1-text {
+            visibility: visible;
+            opacity: 1;
+        }
+  
+        .recipes-container {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            display: none; /* Initially hidden */
+            padding: 20px;
+            position: relative;
+        }
+        .recipe-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 600px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 10px;
+        }
+        .recipe-card h3 {
+            margin: 0;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #ff8c00;
+            color: white;
+        }
+        .recipe-card img {
+            width: 100%;
+            height: auto;
+            mask: ellipseMask;
+        }
+        .recipe-card p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .recipe-card a {
+            display: block;
+            padding: 10px;
+            background-color: #ff8c00;
+            color: white;
+            text-decoration: none;
+        }
+        .recipe-card a:hover {
+            background-color: #ff7000;
+        }
+        #wave-canvas {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            z-index: 1; /* Keeps the canvas below other content */
+        }
+        #chunk-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5; /* Above the waves but below the header */
+        }
+        #exclude-container, #kitchen-equipment-container {
+            display: none;
+            width: 100%;
+        }
+        #random-recipe-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            position: relative;
+        }  
+  
+        .notification-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index:1000;
+        }
+  
+        .loading-indicator {
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 1000;
+        }
+  
+        .spinner {
+          border: 16px solid #f3f3f3; 
+          border-top: 16px solid #3498db; 
+          border-radius: 50%; 
+          width: 120px; 
+          height: 120px; 
+          animation: spin 2s linear infinite; 
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }          
+  
+        .tag {
+          display: inline-block;
+          background-color: #f0f0f0;
+          padding: 5px 10px;
+          border-radius: 5px;
+          margin-right: 5px;
+          margin-bottom: 5px;
+        }
+
+        .close-button {
+          cursor: pointer;
+          background: none;
+          border: none;
+          color: #ffffff;
+          font-size: 20px;
+          margin-left: 5px;
+        }
+  
+        .exclude-close-button {
+          cursor: pointer;
+          background: none;
+          border: none;
+          color: #ffffff;
+          font-size: 20px;
+          margin-left: 5px;
+        }
+  
+      .equipment-images img {
+          display: flex;
+          justify-content: center;
+          margin-top: 10px;
+          width: 50px;
+      }
+  
+      .ingredients-images img {
+          width: 50px;
+          margin-right: 10px;       
+      }        
+  
+      /* Basic reset and styling */
+      .select-container {
+          position: relative;
+          width: 100%;
+          max-width: 300px;
+          margin-bottom: 20px;
+          z-index: 20;
+          display: none;
+      }
+
+        .select-container label {
+          font-weight: bold;
+          margin-right: 10px;
+          z-index: 20;
+        }
+
+        .select-container select {
+          appearance: none; /* Remove default appearance */
+          -webkit-appearance: none; /* Safari and Chrome */
+          -moz-appearance: none; /* Firefox */
+          padding: 12px 16px; /* Padding for dropdown */
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          width: 100%;
+          cursor: pointer;
+          background-color: #fff; /* Dropdown background */
+          background-image: linear-gradient(to bottom, #f9f9f9, #e0e0e0); /* Gradient background */
+          z-index: 20;
+        }
+
+        .select-container select:hover {
+          border-color: #999; /* Darker border on hover */
+          z-index: 1000;
+        }
+
+        .select-container select:focus {
+          outline: none; /* Remove default focus style */
+          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.7); /* Custom focus style */
+          z-index: 20;
+        }
+
+        .select-container::before {
+          content: '\25BC'; /* Down arrow Unicode character */
+          font-size: 14px;
+          color: #666;
+          position: absolute;
+          top: 50%;
+          right: 10px;
+          transform: translateY(-50%);
+          pointer-events: none; /* Ensure arrow doesnt interfere with clicking */
+          z-index: 20;
+        }
+  
+        .sort-arrows {
+          display: inline-block;
+          vertical-align: middle;
+          margin-left: 10px;
+        }
+  
+        .sort-arrows button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 18px;
+          color: #333;
+          margin: 0 5px;
+          transition: color 0.3s;
+        }
+  
+        .sort-arrows button:hover {
+          color: #007bff;
+        }
+  
+        .logo-mask {
+          position: absolute;
+          top: 265px; /* Adjust as needed */
+          left: 50%; /* Center horizontally */
+          transform: translateX(-50%);
+          background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 10; /* Ensure its above other content */
+        }  
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button id="panel-toggle" class="panel-toggle">&#8801;</button>
+        <button id="main-back-button" class="back-button"></button>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search by Ingredients or by Title...">
+            <button id="search-button">Search</button>
+            <select id="options-dropdown">
+                <option value="default">Add Option +</option>
+                <option value="exclude">Exclude Ingredients(Optional)</option>
+                <option value="kitchenequipment">Kitchen Equipment(Optional)</option>
+            </select>
+            <div id="exclude-container">
+                <input type="text" id="exclude-input" placeholder="Exclude ingredients...">
+            </div>
+            <div id="kitchen-equipment-container">
+                <input type="text" id="kitchen-equipment-input" placeholder="Kitchen Equipments..."> 
+            </div>
+        </div>
+    </div>
+    <div id="panel" class="panel">
+        <div class="panel-content">
+            <h2>Options</h2>
+          <ul>
+              <li><a href="Ingredient Information.html">Ingredient Information &#128269</a></li>
+              <li><a href="#" id="random-link">Random &#10067</a></li>
+            <li><a href="Ingredient Alternatives.html">Ingredient Alternatives(Baking Ingredients) &#127874</a></li>
+            <li><a href="Search-By-Nutrients.html">Search By Nutrients &#128170</a></li>
+            <li><a href="Search Menu Items.html">Search Menu Items &#x1F357</a></li>
+            <li class="tooltip1-container">
+                  <a href="Search Packaged Products.html">Search Packaged Products &#128722</a>
+                  <div class="tooltip1-text">
+                      <a href="Search Product By UPC.html">Search Product By UPC</a>
+                      <a href="Search Package Products By Ingredients.html">Search Packaged Products By Ingredients</a>
+                  </div>
+            </li>
+            <li><a href="Comparable Products Search.html">Get Similar Packaged Products By UPC &#128200</a></li>
+            <li><a href="Meal Planner Login.html">Meal Planner &#x1F4D3</a></li>
+            <li><a href="Storage.html">Storage &#128682</a></li>
+            <li class="tooltip-container">
+                <a href="">Tools &#9881</a>
+                <div class="tooltip-text">
+                    <a href="Ingredient-Nutrient Calculator.html">Ingredient-Nutrient Calculator</a>
+                    <a href="Convert Amounts.html">Convert Amounts</a>
+                    <a href="Extract Recipe.html">Extract Recipe</a>
+                    <a href="Analyze Recipe.html">Analyze Recipe</a>
+                </div>
+            </li>
+          </ul>
+        </div>
+    </div>
+    <canvas id="wave-canvas"></canvas>
+    <canvas id="chunk-canvas"></canvas>
+    <div id="notification" class="notification-box">
+        Your daily point limit of 150 has been reached. Please upgrade your plan to continue using the app.
+    </div>
+    <div id="select-container"class="select-container">
+        <label for="sort">Sort by...</label>
+        <select id="sort" onchange="sortAndDisplayRecipes(this.value)">
+            <option value="(empty)">Sort by...</option>
+            <option value="meta-score">Meta Score</option>
+            <option value="healthiness">Healthiness</option> 
+            <option value="popularity">Popularity</option>
+            <option value="price">Price</option>
+            <option value="time">Time</option>
+            <option value="random">Random</option>
+            <option value="max-used-ingredients">Max-Used-Ingredients</option>
+            <option value="min-missing-ingredients">Min-Missing-Ingredients</option>
+            <option value="alcohol">Alcohol</option>
+            <option value="caffeine">Caffeine</option>
+            <option value="copper">Copper</option>               
+            <option value="energy">Energy</option>
+            <option value="calories">Calories</option>
+            <option value="calcium">Calcium</option>
+            <option value="carbohydrates">Carbohydrates</option>
+            <option value="carbs">Carbs</option>
+            <option value="choline">Choline</option>
+            <option value="cholesterol">Cholesterol</option>
+            <option value="total-fat">Total-Fat</option>
+            <option value="fluoride">Fluoride</option>
+            <option value="trans-fat">Trans-Fat</option>
+            <option value="saturated-fat">Saturated-Fat</option>
+            <option value="mono-unsaturated-fat">Mono-Unsaturated-Fat</option>
+            <option value="poly-unsaturated-fat">Poly-Unsaturated-Fat</option>
+            <option value="fiber">Fiber</option>
+            <option value="folate">Folate</option>
+            <option value="folic-acid">Folic-Acid</option>
+            <option value="iodine">Iodine</option>
+            <option value="iron">Iron</option>
+            <option value="magnesium">Magnesium</option>
+            <option value="manganese">Manganese</option>
+            <option value="vitamin-b3">Vitamin-B3</option>                
+            <option value="niacin">Niacin</option>
+            <option value="vitamin-b5">Vitamin-B5</option>
+            <option value="pantothenic-acid">Pantothenic-acid</option> 
+            <option value="phosphorus">Phosphorus</option>
+            <option value="potassium">Potassium</option>
+            <option value="protein">Protein</option>
+            <option value="vitamin-b2">Vitamin-B2</option>
+            <option value="riboflavin">Riboflavin</option>
+            <option value="selenium">Selenium</option>
+            <option value="sodium">Sodium</option>
+            <option value="vitamin-b1">Vitamin-B1</option>
+            <option value="thiamin">Thiamin</option>
+            <option value="vitamin-a">Vitamin-A</option>
+            <option value="vitamin-b6">Vitamin-B6</option>
+            <option value="vitamin-b12">Vitamin-B12</option>
+            <option value="vitamin-c">Vitamin-C</option>
+            <option value="vitamin-d">Vitamin-D</option>
+            <option value="vitamin-e">Vitamin-E</option>
+            <option value="vitamin-k">Vitamin-K</option>
+            <option value="sugar">Sugar</option>
+            <option value="zinc">Zinc</option>
+        </select>
+        <div class="sort-arrows">
+          <button id="sort-asc" onclick="sortRecipes('asc')">&#9650;</button>
+          <button id="sort-desc" onclick="sortRecipes('desc')">&#9660;</button>              
+        </div>
+    </div>  
+    <div id="recipes-container" class="recipes-container"></div>
+    <div id="random-recipe-container" class="recipes-container" style="display: none;">
+        <div id="random-recipe-header" class ="random-recipe-header">
+            <div class="logo-mask">
+    <!-- Insert your logo image here -->
+                <img src="Logo.jpeg" alt="Logo" width="80">
+            </div>
+            <button id="randomize-button" class="randomize-button">Randomize</button>        
+            <div id="add-tags-container" class="add-tags-container">
+                <div class="line left"></div>
+                <input type="text" id="tags-input" placeholder="Ingredients that should be included in the recipe">
+                <div class="line right"></div>
+            </div>
+            <button id="close-button" class="close-button">Clear All Tags</button>         
+            <div id="exclude-tags-container" class="exclude-tags-container">
+                <div class="line1 left"></div>
+                <input type="text" id="exclude-tags-input" placeholder="Ingredients that should not be included in the recipe">
+                <div class="line1 right"></div>
+            </div>
+            <button id="exclude-close-button" class="exclude-close-button">Clear All Tags</button>
+            <p>Please enusre that the first letter of the tag(s) should be in capital letter</p>
+            <p>Click on the enter button to input tags</p>
+            <button id="random-recipe-back-button" class="back-button"></button>
+        </div>  
+    </div>
+    <div id="loading-indicator" class="loading-indicator" style="display: none;">
+    <div class="spinner"></div>
+    </div>
+    <div class="equipment-images"></div>
+    <script>
+        let lastView = ''
+        const apiKey = '61a1501880de4d18b24da750446320c6';
+  
+        // Function to create a tag element with an "x" button
+        function createTagElement(tagName) {
+            const tag = document.createElement('div');
+            tag.classList.add('tag');
+            tag.textContent = tagName;
+
+            const closeButton = document.createElement('button');
+            const excludeCloseButton = document.createElement('button');
+            closeButton.classList.add('close-button');
+            excludeCloseButton.classList.add('exclude-close-button');
+            excludeCloseButton.innerHTML = '&#10006;'; // "x" symbol
+            closeButton.innerHTML = '&#10006;'; // "x" symbol
+
+    // Event listener to remove tag when "x" button is clicked
+            closeButton.addEventListener('click', () => {
+                tag.remove(); // Remove the tag element
+            });
+            excludeCloseButton.addEventListener('click', () => {
+                tag.remove();
+            });  
+            
+            tag.appendChild(closeButton);
+            return tag;
+            tag.appendChild(excludeCloseButton);
+            return tag;
+        }
+
+// Event listener to add a tag when Enter key is pressed
+        document.getElementById('tags-input').addEventListener('keydown', (event) => {
+        
+            if (event.key === 'Enter' && event.target.value.trim() !== '') {
+                const tagText = event.target.value.trim();
+                const tagElement = createTagElement(tagText);
+                document.getElementById('add-tags-container').appendChild(tagElement);
+                event.target.value = ''; // Clear the input after adding tag
+            }
+        });
+  
+        document.getElementById('exclude-tags-input').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && event.target.value.trim() !== '') {
+                const tagText = event.target.value.trim();
+                const tagElement = createTagElement(tagText);
+                document.getElementById('exclude-tags-container').appendChild(tagElement);
+                event.target.value = ''; // Clear the input after adding tag
+            }
+        });  
+        // Event listener for "Clear Tags" button
+        document.getElementById('close-button').addEventListener('click', () => {  
+            const tagsInput = document.getElementById('tags-input'); // Clear all tags inside the container
+            if (tagsInput) {
+                tagsInput.value = '';
+            }              
+        });
+
+        document.getElementById('exclude-close-button').addEventListener('click', () => {
+            const excludeTagsInput = document.getElementById('exclude-tags-input'); // Clear all tags inside the container
+            if (excludeTagsInput) {
+                excludeTagsInput.value = '';
+            }
+        });
+  
+        function showLoadingIndicator() { 
+            document.getElementById('loading-indicator').style.display = 'block';
+        }
+  
+        function hideLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'none'; 
+        }
+
+        document.getElementById('search-button').addEventListener('click', async () => {
+            const query = document.getElementById('search-input').value;
+            const exclude = document.getElementById('exclude-input').value;
+            const kitchenequipment = document.getElementById('kitchen-equipment-input').value;
+
+            if (query) {
+                showLoadingIndicator();
+                const recipes = await fetchRecipes(query, apiKey, exclude, kitchenequipment);
+                hideLoadingIndicator();
+                displayRecipes(recipes);
+                toggleView(true); // Switch to recipe view
+            } else {
+                alert("Please enter a search query.");
+            }
+        });
+
+        document.getElementById('main-back-button').addEventListener('click', () => {
+            showLoadingIndicator();
+            hideLoadingIndicator();
+            toggleView(false); // Switch to main view
+        });
+  
+        document.getElementById('random-recipe-back-button').addEventListener('click', () => {
+            toggleRandomView(false);
+        });              
+  
+        document.getElementById('options-dropdown').addEventListener('change', (event) => {
+            const selectedOption = event.target.value;
+            const excludeContainer = document.getElementById('exclude-container');
+            const kitchenEquipmentContainer = document.getElementById('kitchen-equipment-container');
+
+            excludeContainer.style.display = 'none';
+            kitchenEquipmentContainer.style.display = 'none';
+
+            if (selectedOption === 'exclude') {
+                excludeContainer.style.display = 'block';
+            }  
+            if (selectedOption ==='kitchenequipment') {
+                 kitchenEquipmentContainer.style.display = 'block';              
+            }
+        });
+
+        document.getElementById('random-link').addEventListener('click', () => {
+            toggleRandomView(true);
+        }); 
+  
+        document.getElementById('randomize-button').addEventListener('click', async () => {
+            const tags = document.getElementById('tags-input').value;
+            const excludeTags = document.getElementById('exclude-tags-input').value; 
+            showLoadingIndicator();
+            try {
+                let recipes;
+                if (tags) {
+                    recipes = await fetchRandomRecipe(apiKey,tags);
+                } else {
+                    recipes = await fetchRandomRecipe(apiKey);                  
+                }
+                if (excludeTags) {
+                  recipes = await fetchRandomRecipe(apiKey,excludeTags);
+                } else {
+                  recipes = await fetchRandomRecipe(apiKey); 
+                }
+                if (excludeTags, tags) { 
+                    recipes = await fetchRandomRecipe(apiKey, tags, excludeTags);
+                } else {
+                    recipes = await fetchRandomRecipe(apiKey);                  
+                }                    
+                hideLoadingIndicator();
+                displayRandomRecipe(recipes); 
+                toggleRandomView(true); // Switch to random recipe view  
+            } catch(error) {
+                hideLoadingIndicator();
+                console.error('Error fetching random recipes:', error);
+            }
+        });            
+  
+        document.getElementById('sort').addEventListener('change', function(event) {
+            const sortOption = event.target.value;
+            sortAndDisplayRecipes(sortOption);
+        });  
+
+        async function fetchRecipes(query, apiKey, exclude, kitchenequipment, sortOption, sortDirection = 'asc') {
+            let url = `https://api.spoonacular.com/recipes/complexSearch?query=${query}&number=1&apiKey=${apiKey}&excludeIngredients=${exclude}&sort=${sortOption}&sortDirection=${sortDirection}&addRecipeInformation=true&addRecipeNutrition=true&equipment=${kitchenequipment}&cuisine=african,asian,american,british,cajun,caribbean,chinese,eastern%20european,european,french,german,greek,indian,irish,italian,japanese,jewish,korean,latin%20american,mediterranean,mexican,middle%20eastern,nordic,southern,spanish,thai,vietnamese&diet=gluten%20free|ketogenic|vegetarian|lacto-vegetarian|ovo-vegetarian|vegan|pescetarian|paleo|primal|low%20fodmap|whole30&type=main%20course,side%20dish,dessert,appetizer,salad,bread,breakfast,soup,beverage,sauce,marinade,fingerfood,snack,drink`;
+            try {
+                const response = await fetch(url);
+                if (response.status === 200) {
+                    const data = await response.json();
+                    if (data.totalResults === 0) {
+                        showNotification ("Invalid Input");
+                        return [];
+                    }  
+                    console.log(`Fetched ${data.results.length} recipes`);
+                    const recipesWithDetails = await Promise.all(data.results.map(async recipe => {
+                        const {equipment, summary, nutrition, nutrients, taste, ingredients } = await fetchRecipeInfo(recipe.id, apiKey);
+                        return { ...recipe, equipment, summary, nutrition, nutrients, taste, ingredients };
+                    }));
+                    return recipesWithDetails;
+                } else if (response.status === 429) {
+                    showNotification("Your daily points of 150 has been reached. Please upgrade your plan to continue using the app");
+                    return [];
+                } else if (response.status === 402) {
+                    showNotification("Your daily limit of 150 has been reached. Please upgrade your plan to continue using the app");
+                    return [];
+                } else {
+                    const errorMessage = await response.text();
+                    console.error(`Error: ${response.status} - ${errorMessage}`);
+                    showNotification("Cannot fetch Recipe. Check internet connection");
+                    return [];
+                }
+            } catch (error) {
+                console.error("An error occurred while fetching recipes:", error.message);
+                showNotification("Cannot fetch recipe. Check internt connection.");
+                return [];
+            }
+        }
+  
+        async function sortAndDisplayRecipes(sortOption) {
+            const query = document.getElementById('search-input').value;
+            const apiKey = '61a1501880de4d18b24da750446320c6';
+            const recipes = await fetchRecipes (query, apiKey, exclude, kitchenequipment, sortOption)
+            displayRecipes(recipes);
+        }
+  
+        async function sortRecipes(direction) {
+            const sortOption = document.getElementById('sort').value;
+            const query = document.getElementById('search-input').value;
+            const apiKey = '61a1501880de4d18b24da750446320c6';
+            const recipes = await fetchRecipes(query, apiKey, exclude, kitchenequipment, sortOption, direction);
+            displayRecipes(recipes);
+        }  
+  
+        async function fetchRecipeInfo(recipeId, apiKey,) {
+            const url = `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${apiKey}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch recipe info. Status: ${response.status}`);
+                }  
+                const data = await response.json();
+                console.log('Full recipe data:', data);
+                const summary = data.summary || 'Summary not available';          
+                let nutritionInfo = {
+                    sourceName: data.sourceName !== undefined ? data.sourceName : 'N/A'
+                };              
+                console.log('Extracted nutrition info:', nutritionInfo);
+              
+                const nutrientsUrl = `https://api.spoonacular.com/recipes/${recipeId}/nutritionWidget.json?apiKey=${apiKey}`; 
+                const nutrientsResponse = await fetch(nutrientsUrl); 
+                if (!nutrientsResponse.ok) { 
+                    throw new Error(`Failed to fetch nutrients widget data. Status: ${nutrientsResponse.status}`); 
+                  
+                } 
+                const nutrientsData = await nutrientsResponse.json();             
+                console.log('Nutrients Data:', nutrientsData);
+              
+                const tasteUrl = `https://api.spoonacular.com/recipes/${recipeId}/tasteWidget.json?apiKey=${apiKey}`
+                const tasteResponse = await fetch(tasteUrl);
+                if (!tasteResponse.ok) {
+                    throw new Error(`Failed to fetch taste widget data. Status: ${tasteResponse.status}`); 
+                }
+                const tasteData = await tasteResponse.json();
+                console.log('Taste Data:', tasteData);               
+                const ingredientsUrl = `https://api.spoonacular.com/recipes/${recipeId}/ingredientWidget.json?apiKey=${apiKey}`;
+                const ingredientsResponse = await fetch(ingredientsUrl);
+                if (!ingredientsResponse.ok) {
+                    throw new Error(`Failed to fetch ingredients widget data. Status: ${ingredientsResponse.status}`);
+                }
+                const ingredientsData = await ingredientsResponse.json();
+                console.log('Ingredients Data:', ingredientsData);              
+                const equipmentUrl = `https://api.spoonacular.com/recipes/${recipeId}/equipmentWidget.json?apiKey=${apiKey}`;
+                const equipmentResponse = await fetch(equipmentUrl);
+                if (!equipmentResponse.ok) {
+                    throw new Error(`Failed to fetch equipment widget data. Status: ${equipmentResponse.status}`);
+                }        
+                const equipmentData = await equipmentResponse.json();
+                console.log('Equipment Data:', equipmentData);
+                return {
+                    title: data.title,
+                    image: data.image,
+                    equipment: equipmentData.equipment || [],
+                    summary: summary,
+                    nutrition: nutritionInfo,
+                    nutrients: nutrientsData,
+                    taste: tasteData,
+                    ingredients: ingredientsData.ingredients || [],
+                };                  
+            } catch (error) {
+                console.error('Error fecthing recipe info:', error);
+                return {
+                    title: 'Unknown',
+                    image: '',
+                    equipment: [],
+                    summary: 'Summary not available',
+                    nutrition: {
+                        sourceName: 'N/A'
+                    }, 
+                    nutrients: {},
+                    taste: 'Taste information not availabe' ,
+                    ingredients: []                  
+                }
+            }
+        }
+  
+        async function fetchRandomRecipe(apiKey, tags, excludeTags) {
+            const url = `https://api.spoonacular.com/recipes/random?number=1&apiKey=${apiKey}`; 
+            if (tags) {
+                let url = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=1`
+                url += `&include-tags=${encodeURIComponent(tags)}`;
+                console.log(`Fetching random recipe with URL: ${url}`);
+            }
+            if (excludeTags) {
+                let url1 = `https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=1`
+                url1 += `&exclude-tags=${encodeURIComponent(excludeTags)}`;
+                console.log(`Fetching random recipe with URL: ${url1}`);
+            }
+          
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`Fetched ${data.recipes.length} randomRecipes`);
+                    const recipesWithDetails = await Promise.all(data.recipes.map(async recipe => {
+                        const {equipment, summary, nutrition, nutrients, taste, ingredients } = await fetchRecipeInfo(recipe.id, apiKey);
+                        return { ...recipe, equipment, summary, nutrition, nutrients, taste, ingredients };
+                    }));
+                    return recipesWithDetails;
+                } else if (response.status === 402) {
+                  showNotification("Your daily points limit of 150 has been reached. Please upgrade your plan to continue using this app"); 
+                  return [];                 
+                } else if (response.status === 429) {
+                  showNotification("Your daily points of 150 has been reached. Please upgrade your plan to continue using this app");                  
+                } else {
+                  const errorMessage = await response.text();
+                  console.error(`Error: ${response.status} - ${errorMessage}`);
+                  showNotification("Cannot fetch Recipe. Check internet connection");
+                  return [];
+                }
+            } catch (error) {
+                console.error('Error fetching random recipes:', error);
+                showNotification("Cannot fetch Recipe. Check internet connection.");
+                return[];
+            }
+        }          
+  
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.transition = 'opacity 1s';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.textContent = '';
+                    notification.style.display = 'none';
+                    notification.style.opacity = '1';
+                    notification.style.transition = 'none';
+                }, 1000);
+            }, 1000);
+        }
+
+        function displayRecipes(recipes) {
+            const container = document.getElementById('recipes-container');
+            container.innerHTML = ''; // Clear previous results
+            recipes.forEach(async (recipe) => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                let cardHTML = `
+                    <h3>${recipe.title}</h3>
+                    <img src="${recipe.image}" alt="${recipe.title}">
+                    <p>${recipe.summary}</p>
+                    <h3>Ingredients</h3>
+                    <div class="ingredients-images">
+                      ${recipe.ingredients.map(ingredients => `<img src="https://spoonacular.com/cdn/ingredients_250x250/${ingredients.image}" alt="${ingredients.name}">`).join('')}
+                    </div>
+                    <ul>
+                      ${recipe.ingredients.map(ingredients => `<li>Name: ${ingredients.name}</li>`).join('')}
+                    </ul>
+                    <ul>
+                      ${recipe.ingredients.map(ingredients => `<li>Us Measurement: ${ingredients.amount.us.value} ${ingredients.amount.us.unit}</li> <li>Metric Measurement: ${ingredients.amount.metric.value} ${ingredients.amount.metric.unit}</li>`).join('')}  
+                    </ul>
+                    <div>
+                        <h3>Nutritional Information</h3>
+                        ${recipe.nutrients.nutrients.map(nutrient => `
+                            <p>${nutrient.name}: ${nutrient.amount} ${nutrient.unit} (${nutrient.percentOfDailyNeeds} of daily needs)</p>
+                        `).join('')} 
+                        <div>
+                            <h4>Caloric Breakdown:</h4>
+                            <p>Percent Protein: ${recipe.nutrients.caloricBreakdown.percentProtein}%</p>
+                            <p>Percent Fat: ${recipe.nutrients.caloricBreakdown.percentFat}%</p>
+                            <p>Percent Carbs: ${recipe.nutrients.caloricBreakdown.percentCarbs}%</p>
+                        </div>
+                        <div>
+                            <h4>Weight Per Serving:</h4>
+                            <p>${recipe.nutrients.weightPerServing.amount} ${recipe.nutrients.weightPerServing.unit}</p>
+                        </div>  
+                    </div>      
+                    <h3>Taste Information</h3>
+                    <p>Sweetness: ${recipe.taste.sweetness}</p>
+                    <p>Saltiness: ${recipe.taste.saltiness}</p>
+                    <p>Sourness: ${recipe.taste.sourness}</p>
+                    <p>Bitterness: ${recipe.taste.bitterness}</p>
+                    <p>Fattiness: ${recipe.taste.fattiness}</p>
+                    <p>Spiciness: ${recipe.taste.spiciness}</p>
+              
+                    <div class="equipment-images">
+                `;      
+                if (recipe.equipment && Array.isArray(recipe.equipment) && recipe.equipment.length > 0) {
+                    recipe.equipment.forEach(equipment => {
+                        cardHTML += `
+                            <img src="${equipment.image}" alt="${equipment.name}">
+                            <span>${equipment.name}</span>
+                        `;
+                    });    
+                } else {      
+                    cardHTML += 'No equipment information available';
+                }
+                cardHTML += `</div>`;
+                cardHTML += `              
+                    <div class="nutrition-info">
+                        <p>Source Name:${recipe.nutrition.sourceName !== undefined ? recipe.nutrition.sourceName :'N/A'}</p>
+                    </div>   
+                `;
+                cardHTML += `              
+                    <a href="https://spoonacular.com/recipes/${recipe.title.replace(/ /g, '-').toLowerCase()}-${recipe.id}" target="_blank">View Recipe</a>
+                `;
+                card.innerHTML = cardHTML;
+                container.appendChild(card);
+            });
+        }
+
+        function displayRandomRecipe(randomRecipe) {
+            const container = document.getElementById('random-recipe-container');
+            Array.from(container.children).forEach(child => {
+                if (!child.classList.contains('random-recipe-header')) {
+                    container.removeChild(child);
+                }
+            });  
+            
+            randomRecipe.forEach(recipe => {
+                const card = document.createElement('div')
+                card.className = 'recipe-card';
+                let cardHTML = `
+                    <h3>${recipe.title}</h3>
+                    <img src="${recipe.image}" alt="${recipe.title}">
+                    <p>${recipe.summary}</p>
+                    <h3>Ingredients</h3>
+                    <div class="ingredients-images">
+                      ${recipe.ingredients.map(ingredients => `<img src="https://spoonacular.com/cdn/ingredients_250x250/${ingredients.image}" alt="${ingredients.name}">`).join('')}
+                    </div>
+                    <ul>
+                      ${recipe.ingredients.map(ingredients => `<li>Name: ${ingredients.name}</li>`).join('')}
+                    </ul>
+                    <ul>
+                      ${recipe.ingredients.map(ingredients => `<li>Us Measurement: ${ingredients.amount.us.value} ${ingredients.amount.us.unit}</li> <li>Metric Measurement: ${ingredients.amount.metric.value} ${ingredients.amount.metric.unit}</li>`).join('')}  
+                    </ul>
+                    <div>
+                    <div>
+                        <h3>Nutritional Information</h3>
+                        ${recipe.nutrients.nutrients.map(nutrient => `
+                            <p>${nutrient.name}: ${nutrient.amount} ${nutrient.unit} (${nutrient.percentOfDailyNeeds} of daily needs)</p>
+                        `).join('')} 
+                        <div>
+                            <h4>Caloric Breakdown:</h4>
+                            <p>Percent Protein: ${recipe.nutrients.caloricBreakdown.percentProtein}%</p>
+                            <p>Percent Fat: ${recipe.nutrients.caloricBreakdown.percentFat}%</p>
+                            <p>Percent Carbs: ${recipe.nutrients.caloricBreakdown.percentCarbs}%</p>
+                        </div>
+                        <div>
+                            <h4>Weight Per Serving:</h4>
+                            <p>${recipe.nutrients.weightPerServing.amount} ${recipe.nutrients.weightPerServing.unit}</p>
+                        </div>  
+                    </div>
+                    <h3>Taste Information</h3>
+                    <p>Sweetness: ${recipe.taste.sweetness}</p>
+                    <p>Saltiness: ${recipe.taste.saltiness}</p>
+                    <p>Sourness: ${recipe.taste.sourness}</p>
+                    <p>Bitterness: ${recipe.taste.bitterness}</p>
+                    <p>Fattiness: ${recipe.taste.fattiness}</p>
+                    <p>Spiciness: ${recipe.taste.spiciness}</p>              
+                    <div class="equipment-images">
+                `;      
+                if (recipe.equipment && Array.isArray(recipe.equipment) && recipe.equipment.length > 0) {
+                    recipe.equipment.forEach(equipment => {
+                        cardHTML += `
+                            <img src="${equipment.image}" alt="${equipment.name}">
+                            <span>${equipment.name}</span>
+                        `;
+                    });    
+                } else {      
+                    cardHTML += 'No equipment information available';
+                }
+                cardHTML += `</div>`;
+                cardHTML += `
+                    <div class="nutrition-info">
+                        <p>Source Name:${recipe.nutrition.sourceName !== undefined ? recipe.nutrition.sourceName :'N/A'}</p>
+                    </div>  
+                `;
+                cardHTML += `              
+                    <a href="https://spoonacular.com/recipes/${recipe.title.replace(/ /g, '-').toLowerCase()}-${recipe.id}" target="_blank">View Recipe</a>
+                `;
+                card.innerHTML = cardHTML
+                container.appendChild(card);
+            });
+            container.style.display = 'flex';
+        }                
+              
+        function toggleView(showRecipes) {
+            const waveCanvas = document.getElementById('wave-canvas');
+            const chunkCanvas = document.getElementById('chunk-canvas');
+            const recipesContainer = document.getElementById('recipes-container');
+            const randomRecipeContainer = document.getElementById('random-recipe-container');
+            const mainBackButton = document.getElementById('main-back-button');
+            const header = document.querySelector('.header');
+            const randomRecipeHeader = document.getElementById('random-recipe-header');
+            const sortByOptionDropdown = document.getElementById('select-container');
+
+            if (showRecipes) {
+                    waveCanvas.style.display = 'none';
+                    chunkCanvas.style.display = 'none';
+                    recipesContainer.style.display = 'flex';
+                    mainBackButton.style.display = 'inline-block';
+                    randomRecipeContainer.style.display = 'none';
+                    header.style.display = 'flex';
+                    randomRecipeHeader.style.display = 'none';
+                    sortByOptionDropdown.style.display = 'block'
+            } else {
+                waveCanvas.style.display = 'block';
+                chunkCanvas.style.display = 'block';
+                recipesContainer.style.display = 'none';
+                mainBackButton.style.display = 'none';
+                header.style.display = 'block';
+                randomRecipeContainer.style.display = 'none';
+                randomRecipeHeader.style.display = 'none';
+                sortByOptionDropdown.style.display = 'none';
+            }
+        }
+  
+        function toggleRandomView(showRandom) {
+            const waveCanvas = document.getElementById('wave-canvas'); 
+            const chunkCanvas = document.getElementById('chunk-canvas'); 
+            const recipesContainer = document.getElementById('recipes-container');
+            const randomRecipeBackButton = document.getElementById('random-recipe-back-button');
+            const randomRecipeContainer = document.getElementById('random-recipe-container');         
+            const mainBackButton = document.getElementById('main-back-button'); 
+            const header = document.querySelector('.header');
+            const randomRecipeHeader = document.getElementById('random-recipe-header');
+          
+            if (showRandom) { 
+                waveCanvas.style.display = 'none'; 
+                chunkCanvas.style.display = 'none'; 
+                recipesContainer.style.display = 'none'; 
+                randomRecipeContainer.style.display = 'flex'; 
+                mainBackButton.style.display = 'none';  
+                randomRecipeBackButton.style.display = 'block';
+                header.style.display = 'none';
+                randomRecipeHeader.style.display = 'block';
+            } else { 
+                waveCanvas.style.display = 'block'; 
+                chunkCanvas.style.display = 'block'; 
+                recipesContainer.style.display = 'none';  
+                randomRecipeContainer.style.display = 'none'; 
+                mainBackButton.style.display = 'none';  
+                randomRecipeBackButton.style.display ='none';
+                header.style.display = 'block';
+                randomRecipeHeader.style.display = 'none';                
+            }
+        }
+  
+        function createWaveAnimation() {
+            const canvas = document.getElementById('wave-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight / 4;
+            const numWaves = 7;
+            const waveHeight = height / numWaves;
+            const colors = ["#0000ff", "#00bfff", "#80dfff", "#b3f0ff", "#d6f5ff", "#ecfaff", "#f5fdff"];
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                for (let i = 0; i < numWaves; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, height);
+                    for (let x = 0; x < width; x++) {
+                        const y = Math.sin((x / width) * 2 * Math.PI + i * 0.5) * waveHeight * 0.25 + (i * waveHeight);
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.lineTo(width, height);
+                    ctx.closePath();
+                    ctx.fillStyle = colors[i];
+                    ctx.fill();
+                }
+            }
+
+            function drawFoodChunks() {
+                // Draw random scattered food chunks over the entire screen
+                const totalChunks = 100;
+                const smallChunks = 5;
+                const chunks = [];
+
+                for (let i = 0; i < totalChunks; i++) {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    const size = Math.random() * 6 + 3; // Smaller size
+                    const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+                    chunks.push({ x, y, size, color });
+                }
+
+                for (let i = 0; i < smallChunks; i++) {
+                    const x = Math.random() * (window.innerWidth * 0.5) + (window.innerWidth * 0.25); // Around the center horizontally
+                    const y = Math.random() * (window.innerHeight * 0.1) + 20; // Near the search bar
+                    const size = Math.random() * 1 + 0.5; // Very small size
+                    const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+                    chunks.push({ x, y, size, color });
+                }
+
+                const chunkCanvas = document.getElementById('chunk-canvas');
+                const chunkCtx = chunkCanvas.getContext('2d');
+                chunkCanvas.width = window.innerWidth;
+                chunkCanvas.height = window.innerHeight;
+
+                chunks.forEach(chunk => {
+                    chunkCtx.beginPath();
+                    chunkCtx.arc(chunk.x, chunk.y, chunk.size, 0, 2 * Math.PI);
+                    chunkCtx.fillStyle = chunk.color;
+                    chunkCtx.fill();
+                });
+            }
+
+            function animate() {
+                draw();
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+            drawFoodChunks();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const panelToggle = document.getElementById('panel-toggle');
+            const panel = document.getElementById('panel');
+
+                panelToggle.addEventListener('click', () => {
+                event.stopPropagation();
+                panel.classList.toggle('panel-open');
+            });
+        
+            document.addEventListener('click', (event) => {
+                    const target = event.target;
+                    if (!panel.contains(target) && target !== panelToggle) {
+                        panel.classList.remove('panel-open');
+                    }
+            });
+            document.getElementById('random-recipe-container').style.display = 'none';
+        });    
+  
+        document.addEventListener('DOMContentLoaded', () => {
+            createWaveAnimation();
+        });
+  
+
+        window.onload = () => {
+            createWaveAnimation();
+        };
+    </script>
+</body>
+</html>
