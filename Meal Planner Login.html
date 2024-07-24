@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('Fried_Chicken.jpeg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 100px auto;
+            border: 2px solid transparent;
+            justify-content: center;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            background-color: blue;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .message-container {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 100px auto;
+            text-align: center;
+            display: none;
+        }
+
+        .message-container button {
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            background-color: blue;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+  
+        .logo-mask {
+          position: absolute;
+          top: 10px; /* Adjust as needed */
+          left: 50%; /* Center horizontally */
+          transform: translateX(-50%);
+          background-color: rgba(255, 255, 255, 0.7); /* White background with transparency */
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 10; /* Ensure its above other content */
+      }
+
+      #spinner {
+          display: none;
+          text-align: center;
+          margin-top: 20px;
+          font-size: 18px;
+          color: blue;
+      }
+
+    </style>
+</head>
+<body>
+   <div class="logo-mask">
+    <!-- Insert your logo image here -->
+        <img src="Logo.jpeg" alt="Logo" width="100">
+    </div> 
+    <div class="login-container">
+        <input type="text" id="username" placeholder="Username">
+        <input type="text" id="first-name" placeholder="First Name">
+        <input type="text" id="last-name" placeholder="Last Name">
+        <input type="email" id="email" placeholder="Email">
+        <button onclick="login()">Login</button>
+      <div id="spinner" style="display:none;">Loading...</div>
+    </div>
+
+    <div class="message-container" id="message-container">
+        <p id="login-info"></p>
+        <button onclick="goToMainPage()">Next</button>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById('username').value;
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const email = document.getElementById('email').value;
+
+            // Spoonacular API endpoint to connect user
+            const apiEndpoint = 'https://api.spoonacular.com/users/connect?apiKey=61a1501880de4d18b24da750446320c6';
+          
+            document.getElementById('spinner').style.display = 'block';
+
+            // POST request to connect user
+            fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, firstName, lastName, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('spinner').style.display = 'none';
+                if (data.username && data.spoonacularPassword && data.hash) {
+                    // Save the hash locally
+                    localStorage.setItem('spoonacularHash', data.hash);
+                    localStorage.setItem('spoonacularPassword', data.spoonacularPassword);
+                    localStorage.setItem('spoonacularUername', data.username);
+
+                    // Display login info
+                    document.getElementById('login-info').innerText = `Username: ${data.username}\nPassword: ${data.spoonacularPassword}\n\nPlease do not share this information with anyone.`;
+                    document.querySelector('.login-container').style.display = 'none';
+                    document.getElementById('message-container').style.display = 'block';
+                } else {
+                    alert('An error occurred during login. Please try again.');
+                }
+            })
+            .catch(error => {
+                document.getElementById('spinner').style.display = 'none';
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+
+        function goToMainPage() {
+            // Redirect to the main meal planner page
+            window.location.href = 'Main Meal Planner Page.html';
+        }
+
+        // Check if the user is already logged in
+        window.onload = function() {
+            const hash = localStorage.getItem('spoonacularHash');
+            if (hash) {
+                // Redirect to the main meal planner page if logged in
+                window.location.href = 'Main Meal Planner Page.html';
+            }
+        };
+    </script>
+</body>
+</html>
