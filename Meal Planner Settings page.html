@@ -178,9 +178,24 @@
         <div class="settings-item">
             <label id="fitnessTrackerLabel" for="fitnessTracker">Track Nutrients and Calories:</label>
             <button id="startTrackingButton" onclick="startFitnessTracker()">Start Tracking</button>
+            <div id="fitnessTrackerPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; border: 2px solid blue; width: 300px; text-align: center;">
+              <h2>Fitness Tracker</h2>
+              <div id="activityData">
+                <p>Steps: <span id="stepsTaken">0</span></p>
+                <p>Distance: <span id="distanceTraveled">0</span> km</p>
+                <p>Calories: <span id="caloriesBurned">0</span> kcal</p>
+                <p>Active Minutes: <span id="activeMinutes">0</span></p>
+              </div>
+              <label for="exerciseMode">Exercise Mode:</label>
+              <select id="exerciseMode">
+                <option value="walking">Walking</option>
+                <option value="running">Running</option>
+                <option value="cycling">Cycling</option>
+              </select>
+              <button onclick="stopTracking()">Stop Tracking</button>
+            </div>  
         </div>
     </div>
-
     <script>  
         document.addEventListener('DOMContentLoaded', () => {
           const savedTheme = localStorage.getItem('theme') || 'default';
@@ -195,8 +210,62 @@
           loadReminders();
           requestNotificationPermission();
           registerServiceWorker();
+          
+          loadActivityData();
         });
 
+        let trackingInterval;
+        let heartRateInterval;
+        const activityData = {
+            stpes: 0,
+            disatnce: 0,
+            calories: 0,
+            activeMinutes: 0,
+        };
+  
+        function startFitnessTracker() {
+            document.getElementById('fitnessTrackerPopup').style.display = 'block';
+            trackingInterval = setInterval(updateActivityData, 100);
+        }
+  
+        function updateActivityData() { // Simulate data update for demonstration 
+            activityData.steps += Math.floor(Math.random() * 10); 
+            activityData.distance += (Math.random() * 0.01).toFixed(2); 
+            activityData.calories += (Math.random() * 0.05).toFixed(2); 
+            activityData.activeMinutes += 1 / 60; // Every second equals 1/60th of a minute 
+            
+            document.getElementById('stepsTaken').textContent = activityData.steps; 
+            document.getElementById('distanceTraveled').textContent = activityData.distance.toFixed(2); 
+            document.getElementById('caloriesBurned').textContent = activityData.calories.toFixed(2); 
+            document.getElementById('activeMinutes').textContent = Math.floor(activityData.activeMinutes); 
+          
+            saveActivityData(); 
+        }
+  
+        function saveActivityData() {
+            localStorage.setItem('activtyData', JSON.stringify(activityData));
+        }
+  
+        function loadActivityData() { 
+            const savedData = JSON.parse(localStorage.getItem('activityData')); 
+            if (savedData) { 
+                activityData.steps = savedData.steps; 
+                activityData.distance = savedData.distance; 
+                activityData.calories = savedData.calories; 
+                activityData.activeMinutes = savedData.activeMinutes; 
+              
+                document.getElementById('stepsTaken').textContent = activityData.steps; 
+                document.getElementById('distanceTraveled').textContent = activityData.distance.toFixed(2); 
+                document.getElementById('caloriesBurned').textContent = activityData.calories.toFixed(2); 
+              document.getElementById('activeMinutes').textContent = Math.floor(activityData.activeMinutes); 
+            } 
+        } 
+  
+        function stopTracking() { 
+            clearInterval(trackingInterval); 
+            document.getElementById('fitnessTrackerPopup').style.display = 'none'; 
+        }
+  
         function submitRating() {
           const rating = parseInt(document.getElementById('rateWebsite').value);
           if (rating >= 1 && rating <= 5) {
@@ -517,10 +586,6 @@
                 } 
             });
       }
-  
-        function startFitnessTracker() {
-            // Add code to integrate with a fitness tracker for nutrient and calorie tracking
-        }
     </script>
 </body>
 </html>
