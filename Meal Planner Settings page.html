@@ -460,7 +460,7 @@
               if (reminderTime > now) {
                   const timeout = reminderTime.getTime() - now.getTime();
                   setTimeout(() => { 
-                      showPushNotification(timer.name, `It is time for your meal: ${timer.name}`, reminderTime.getTime()); 
+                      sendPushNotification(timer.name, `It is time for your meal: ${timer.name}`, reminderTime.getTime()); 
                   }, timeout);
               }
           });
