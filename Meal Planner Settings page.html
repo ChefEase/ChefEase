@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner Settings Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('Meal Planner Settings Background.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: black;
+        }
+        .settings-container {
+            border: 2px solid blue;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            background-color: white;
+        }
+        h1 {
+            color: black;
+        }
+        .settings-item {
+            margin-bottom: 20px;
+        }
+        .settings-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .settings-item input[type="text"],
+        .settings-item input[type="email"],
+        .settings-item select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid gray;
+            border-radius: 5px;
+        }
+        .settings-item button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .settings-item button:hover {
+            background-color: darkblue;
+        }
+        .social-media {
+            margin-top: 10px;
+        }
+  
+        #addTimerButton {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10%;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 25px;
+        }
+
+        #addTimerButton:hover {
+            background-color: darkblue;
+        }
+  
+        .timer-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 10px; 
+        } 
+  
+        .delete-button { 
+            background-color: white; 
+            color: blue; 
+            border: none; 
+            padding: 5px; 
+            border-radius: 10%; 
+            cursor: pointer; 
+        } 
+  
+        .delete-button:hover { 
+            background-color: darkred; 
+        }  
+
+    </style>
+</head>
+<body data-theme='default'>
+    <div class="settings-container">
+        <h1 id="settingsLabel">Settings</h1>
+        
+        <!-- Rate Our Website -->
+        <div class="settings-item">
+            <label id="rateWebsiteLabel" for="rateWebsite">Rate Our Meal Plan Feature:</label>
+            <input type="number" id="rateWebsite" min="1" max="5" placeholder="Enter your rating (1-5)">
+            <button id="submitRatingButton" onclick="submitRating()">Submit Rating</button>
+        </div>
+      
+        <div id="thankYouPopup" style="display: none; position: fixed; top: 20px; right: 20px; background-color: blue; color: white; padding: 10px; border-radius: 5px;"> 
+            <p>Thank you!</p> 
+            <p style="font-size: 20px; color: yellow;">★</p>
+        </div>
+        
+        <!-- Send Us Feedback -->
+        <div class="settings-item">
+            <label id="feedbackLabel" for="feedbackEmail">Send Us Feedback:</label>
+            <input type="email" id="feedbackEmail" placeholder="Enter your email">
+            <button id="sendFeedbackButton" onclick="sendFeedback()">Send Feedback</button>
+            <label id="gmailContact">Contact us on  onyiakamsy74@gmail.com</label>
+        </div>
+        
+        <!-- Change Color Theme -->
+        <div class="settings-item">
+            <label id="changeColorThemeLabel" for="colorTheme">Change Color Theme:</label>
+            <select id="colorTheme" onchange="changeColorTheme()">
+                <option value="default">Default</option>
+                <option value="emeraldGreen">Emerald Green</option>
+                <option value="navyBlue">Navy Blue</option>
+                <option value="coral">Coral</option>
+                <option value="lavender">Lavender</option>
+                <option value="gold">Gold</option>
+                <option value="red">Red</option>
+                <option value="turquoise">Turquoise</option>
+                <option value="magenta">Magenta</option>
+                <option value="silver">Silver</option>
+                <option value="teal">Teal</option>
+                <option value="black">Black</option>
+            </select>
+        </div>
+        
+        <!-- Contact Us Through Social Media -->
+        <div class="settings-item">
+            <label id="contactUsLabel">Contact Us Through Social Media:</label>
+            <div class="social-media">
+                <a href="https://facebook.com/yourpage" target="_blank">Facebook</a> | 
+                <a href="https://twitter.com/yourpage" target="_blank">Twitter</a> | 
+                <a href="https://instagram.com/yourpage" target="_blank">Instagram</a>
+            </div>
+        </div>
+        
+        <!-- Add Banner Picture -->
+        <div class="settings-item">
+            <label id="addBannerPictureLabel" for="bannerPicture">Add Banner Picture:</label>
+            <input type="file" id="bannerFile" accept="image/*">
+            <button id="addBannerButton" onclick="addBannerPicture()">Add Banner</button>
+        </div>
+        
+        <!-- Change Language Settings -->
+        <div class="settings-item">
+            <label id="changeLanguageLabel" for="language">Change Language:</label>
+            <select id="language" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+            </select>
+            <label id="messageLanguageLabel">Changes made to the language may take up to a minute or two to be displayed on the main page</label>
+        </div>
+        
+        <!-- Calendar Setting -->
+        <div class="settings-item">
+            <label id="mealNameLabel" for="mealName">Meal Name:</label>
+            <input type="text" id="mealName" placeholder="Enter meal name">
+            <label id="mealTimeLabel" for="mealTime">Meal Time:</label>
+            <input type="time" id="mealTime">
+            <label id="mealDateLabel" for="mealDate">Select Date:</label>
+            <select id="mealDate"></select>
+            <button id="setReminderButton" onclick="setMealReminder()">Set Reminder</button>
+            <button id="addTimerButton" onclick="addTimer()">+</button>
+        </div>
+        <div id="additionalTimers"></div>
+        <!-- Fitness Tracker -->
+        <div class="settings-item">
+            <label id="fitnessTrackerLabel" for="fitnessTracker">Track Nutrients and Calories:</label>
+            <button id="startTrackingButton" onclick="startFitnessTracker()">Start Tracking</button>
+        </div>
+    </div>
+
+    <script>  
+        document.addEventListener('DOMContentLoaded', () => {
+          const savedTheme = localStorage.getItem('theme') || 'default';
+          document.getElementById('colorTheme').value = savedTheme;
+          applyTheme(savedTheme);
+          
+          const savedLanguage = localStorage.getItem('language') || 'en'; 
+          document.getElementById('language').value = savedLanguage; 
+          applyLanguage(savedLanguage);
+          
+          populateDates('mealDate');
+          loadReminders();
+          requestNotificationPermission();
+          registerServiceWorker();
+        });
+
+        function submitRating() {
+          const rating = parseInt(document.getElementById('rateWebsite').value);
+          if (rating >= 1 && rating <= 5) {
+              let ratings = JSON.parse(localStorage.getItem('ratings')) || [];
+              ratings.push(rating);
+              localStorage.setItem('ratings', JSON.stringify(ratings));
+              updateAverageRating();
+              showThankYouPopup();
+          } else {
+              alert('Please enter a rating between 1 and 5.');
+          }
+        }
+  
+        function updateAverageRating() {
+            const ratings = JSON.parse(localStorage.getItem('ratings')) || [];
+            if (ratings.length === 0) {
+                localStorage.setItem('averageRating', '0');
+            } else {
+                const sum = ratings.reduce((acc, curr) => acc + curr, 0);
+                const average = (sum / ratings.length).toFixed(1);
+                localStorage.setItem('averageRating', average);
+            }
+        }
+  
+    // Show thank you popup
+        function showThankYouPopup() {
+          const popup = document.getElementById('thankYouPopup');
+          popup.style.display = 'block';
+    
+          setTimeout(() => {
+              popup.style.display = 'none';
+          }, 10000);  // Hide popup after 10 seconds
+        }
+
+        function sendFeedback() {
+            const email = document.getElementById('feedbackEmail').value;
+            const subject = 'Feedback on Meal Planning Website';
+            const body = 'Please enter your feedback here.';
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+  
+        function changeColorTheme() {
+          const theme = document.getElementById('colorTheme').value;
+          localStorage.setItem('theme', theme);
+          applyTheme(theme);
+        }
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+
+            const settingsContainer = document.querySelector('.settings-container');
+            const buttons = document.querySelectorAll('.settings-item button');
+    
+            let borderColor, buttonColor;
+
+            switch (theme) {
+                case 'emeraldGreen':
+                    borderColor = '#50C878';
+                    buttonColor = '#50C878';
+                    break;
+                case 'navyBlue':
+                    borderColor = '#000080';
+                    buttonColor = '#000080';
+                    break;
+                case 'coral':
+                    borderColor = '#FF7F50';
+                    buttonColor = '#FF7F50';
+                    break;
+                case 'lavender':
+                    borderColor = '#E6E6FA';
+                    buttonColor = '#E6E6FA';
+                    break;
+                case 'gold':
+                    borderColor = '#FFD700';
+                    buttonColor = '#FFD700';
+                    break;
+                case 'red':
+                    borderColor = '#FF0000';
+                    buttonColor = '#FF0000';
+                    break;
+                case 'turquoise':
+                    borderColor = '#40E0D0';
+                    buttonColor = '#40E0D0';
+                    break;
+                case 'magenta':
+                    borderColor = '#FF00FF';
+                    buttonColor = '#FF00FF';
+                    break;
+                case 'silver':
+                    borderColor = '#C0C0C0';
+                    buttonColor = '#C0C0C0';
+                    break;
+                case 'teal':
+                    borderColor = '#008080';
+                    buttonColor = '#008080';
+                    break;
+                case 'black':
+                    borderColor = 'black';
+                    buttonColor = 'black';
+                    break;
+                default:
+                    borderColor = 'blue';
+                    buttonColor = 'blue';
+            }
+
+            settingsContainer.style.borderColor = borderColor;
+            buttons.forEach(button => {
+                button.style.backgroundColor = buttonColor;
+            });
+        }
+
+        function addBannerPicture() {
+          const fileInput = document.getElementById('bannerFile');
+
+          if (fileInput.files && fileInput.files[0]) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  const dataURI = e.target.result;
+                  localStorage.setItem('bannerPicture', e.target.result);
+              };
+              reader.readAsDataURL(fileInput.files[0]);
+          }
+      }
+      
+      const translations = {
+          en: { 
+              rateWebsiteLabel: "Rate Our Meal Plan Feature:",
+              feedbackLabel: "Send Us Feedback:",
+              submitRatingButton: "Submit Rating", 
+              sendFeedbackButton: "Send Feedback", 
+              changeColorThemeLabel: "Change Color Theme:", 
+              contactUsLabel: "Contact Us Through Social Media:", 
+              addBannerPictureLabel: "Add Banner Picture:", 
+              setReminderButton: "Set Reminder", 
+              startTrackingButton: "Start Tracking", 
+              mealNameLabel: "Meal Name:", 
+              mealTimeLabel: "Meal Time:",
+              thankYouPopup: "Thank You!",
+              rateWebsite: "Enter your rating (1-5)",
+              gmailContact: "Contact us on onyiakamsy74@gmail.com",
+              addBannerButton: "Add Banner",
+              changeLanguageLabel: "Change Language",
+              mealName: "Enter meal name",
+              fitnessTrackerLabel: "Track nutrients",
+              messageLanguageLabel: "Changes made to the language may take up to a minute or two to be displayed on the main page",
+              settingsLabel: "Settings"
+          },
+          es: { 
+              rateWebsiteLabel: "Califica Nuestra Función de Planificación de Comidas:",
+              feedbackLabel: "Envíanos Tus Comentarios:",
+              submitRatingButton: "Enviar Calificación", 
+              sendFeedbackButton: "Enviar Comentarios", 
+              changeColorThemeLabel: "Cambiar Tema de Color:", 
+              contactUsLabel: "Contáctanos a través de las redes sociales:", 
+              addBannerPictureLabel: "Agregar Imagen de Banner:", 
+              setReminderButton: "Establecer Recordatorio", 
+              startTrackingButton: "Comenzar a Rastrear", 
+              mealNameLabel: "Nombre de la Comida:", 
+              mealTimeLabel: "Hora de la Comida:",
+              thankYouPopup: "Gracias!",
+              rateWebsite: "Introduce tu calificación (1-5)",
+              gmailContact: "Contacta con nosotros en onyiakamsy74@gmail.com",
+              addBannerButton: "Agregar Banner",
+              changeLanguageLabel: "Cambiar Idioma",
+              mealName: "Ingrese el nombre de la comida ",
+              fitnessTrackerLabel: "Seguimiento de nutrientes",
+              messageLanguageLabel: "Los cambios realizados en el idioma pueden tardar hasta uno o dos minutos en mostrarse en la página principal.",
+              settingsLabel: "Ajustes"
+          },
+      };
+
+      function changeLanguage() {
+            const language = document.getElementById('language').value;
+            localStorage.setItem('language', language);
+            applyLanguage(language);
+      }
+      
+      function applyLanguage(language) {
+          const translation = translations[language] || translations['en'];
+
+          document.getElementById('rateWebsiteLabel').textContent = translation.rateWebsiteLabel; 
+          document.getElementById('feedbackLabel').textContent = translation.feedbackLabel; 
+          document.getElementById('submitRatingButton').textContent = translation.submitRatingButton; 
+          document.getElementById('sendFeedbackButton').textContent = translation.sendFeedbackButton; 
+          document.getElementById('changeColorThemeLabel').textContent = translation.changeColorThemeLabel; 
+          document.getElementById('contactUsLabel').textContent = translation.contactUsLabel; 
+          document.getElementById('addBannerPictureLabel').textContent = translation.addBannerPictureLabel; 
+          document.getElementById('setReminderButton').textContent = translation.setReminderButton; 
+          document.getElementById('startTrackingButton').textContent = translation.startTrackingButton; 
+          document.getElementById('mealNameLabel').textContent = translation.mealNameLabel; 
+          document.getElementById('mealTimeLabel').textContent = translation.mealTimeLabel;
+          document.getElementById('thankYouPopup').textContent = translation.thankYouPopup;
+          document.getElementById('rateWebsite').textContent = translation.rateWebsite;
+          document.getElementById('gmailContact').textContent = translation.gmailContact;
+          document.getElementById('addBannerButton').textContent = translation.addBannerButton;
+          document.getElementById('changeLanguageLabel').textContent = translation.changeLanguageLabel;
+          document.getElementById('mealName').textContent = translation.mealName;
+          document.getElementById('fitnessTrackerLabel').textContent = translation.fitnessTrackerLabel;
+          document.getElementById('messageLanguageLabel').textContent = translation.messageLanguageLabel;
+          document.getElementById('settingsLabel').textContent = translation.settingsLabel;
+      }
+
+      function populateDates(selectId) { 
+          const select = document.getElementById(selectId); 
+          const currentDate = new Date(); 
+          select.innerHTML = '';
+          for (let i = 0; i < 7; i++) { 
+              const option = document.createElement('option'); 
+              const date = new Date();
+              date.setDate(currentDate.getDate() + i);            
+              const valueDate = date.toISOString().split('T')[0];
+              const displayDate = date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); 
+              option.value = valueDate;            
+              option.text = displayDate; 
+              select.appendChild(option); 
+          } 
+      }
+  
+      function addTimer() {
+          const additionalTimers = document.getElementById('additionalTimers');
+          const timerContainer = document.createElement('div');
+          timerContainer.classList.add('timer-container');
+          
+          timerContainer.innerHTML = `
+              <div>
+                  <label>Meal Name:</label> 
+                  <input type="text" placeholder="Enter meal name"> 
+                  <label>Meal Time:</label> 
+                  <input type="time">
+                  <label>Select Date:</label>
+                  <select>${document.getElementById('mealDate').innerHTML}</select>
+           </div>
+           <button class="delete-button" onclick="deleteTimer(this)">x</button>
+          `;
+          additionalTimers.appendChild(timerContainer);
+      }
+  
+      function deleteTimer(button) {
+          button.parentElement.remove();
+      }
+  
+      function setMealReminder() {
+          const reminders = [];
+          const mainMealName = document.getElementById('mealName').value;
+          const mainMealTime = document.getElementById('mealTime').value;
+          const mainMealDate = document.getElementById('mealDate').value;
+                    
+          reminders.push({ name: mainMealName, time: mainMealTime, date: mainMealDate});
+        
+          const additionalTimers = document.getElementById('additionalTimers').children;      
+          Array.from(additionalTimers).forEach(timer => {
+              const mealName = timer.querySelector('input[type="text"]').value;
+              const mealTime = timer.querySelector('input[type="time"]').value;
+              const mealDate = timer.querySelector('select').value;
+              reminders.push({ name: mealName, time: mealTime, date: mealDate });
+          });
+          
+          reminders.forEach(timer => {
+              const reminderTime = new Date(`${timer.date}T${timer.time}`);
+              const now = new Date();
+              if (reminderTime > now) {
+                  const timeout = reminderTime.getTime() - now.getTime();
+                  setTimeout(() => { 
+                      showPushNotification(timer.name, `It is time for your meal: ${timer.name}`, reminderTime.getTime()); 
+                  }, timeout);
+              }
+          });
+      }
+  
+      function registerServiceWorker() { 
+          if ('serviceWorker' in navigator && 'PushManager' in window) { 
+              navigator.serviceWorker.register('/cloude-storage-backend/js/service-worker.js') 
+                .then(function(swReg) { 
+                    console.log('Service Worker is registered', swReg); 
+                    swRegistration = swReg; 
+                }) 
+                .catch(function(error) { 
+                    console.error('Service Worker Error', error); 
+                }); 
+          } else { 
+              console.warn('Push messaging is not supported'); 
+          }        
+      }
+  
+      function sendPushNotification(title, body, primaryKey) { 
+          if ('serviceWorker' in navigator && 'PushManager' in window) { 
+              navigator.serviceWorker.ready.then(function(swReg) { 
+                  swReg.showNotification(title, { 
+                      body: body, 
+                      icon: 'meal-planner-icon.png', 
+                      vibrate: [200, 100, 200], 
+                      data: { 
+                          dateOfArrival: Date.now(), 
+                          primaryKey: primaryKey 
+                      } 
+                  }); 
+              }); 
+          } 
+      }
+      function requestNotificationPermission() {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('Notification permission granted.'); 
+                    } else { 
+                        console.log('Notification permission denied.'); 
+                    }
+                });
+      }
+  
+      function loadReminders() { 
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || []; 
+            reminders.forEach(timer => { 
+                const reminderTime = new Date(`${timer.date}T${timer.time}`); 
+                const now = new Date();
+                if (reminderTime > now) { 
+                    const timeout = reminderTime.getTime() - now.getTime(); 
+                  setTimeout(() => showNotification(timer.name, timer.time, timer.date), timeout); 
+                } 
+            });
+      }
+  
+        function startFitnessTracker() {
+            // Add code to integrate with a fitness tracker for nutrient and calorie tracking
+        }
+    </script>
+</body>
+</html>
